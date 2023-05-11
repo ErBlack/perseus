@@ -9,5 +9,5 @@ export {default as KeypadInput} from "./components/input/math-input";
 export {keypadElementPropType} from "./components/prop-types";
 export {default as Keypad} from "./components/provided-keypad";
 export {default as KeyConfigs} from "./data/key-configs";
-export {default as Keys} from "./data/keys";
+export {default as Key} from "./data/keys";
 export {KeyType, KeypadType} from "./enums";

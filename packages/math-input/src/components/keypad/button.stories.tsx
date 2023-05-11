@@ -3,7 +3,6 @@ import {ComponentStory} from "@storybook/react";
 import * as React from "react";
 
 import KeyConfigs from "../../data/key-configs";
-import Keys from "../../data/keys";
 
 import {KeypadButton, KeypadButtonProps} from "./keypad-page-items";
 
@@ -13,7 +12,7 @@ export default {
         keyConfig: {
             control: "select",
             options: {...KeyConfigs},
-            defaultValue: KeyConfigs[Keys.PLUS],
+            defaultValue: KeyConfigs["PLUS"],
         },
         tintColor: {
             control: "color",

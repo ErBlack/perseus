@@ -1,6 +1,6 @@
 import GestureManager from "../components/gesture-manager";
 import VelocityTracker from "../components/velocity-tracker";
-import Keys from "../data/keys";
+import Key from "../data/keys";
 import {LayoutMode, KeypadType} from "../enums";
 
 import type {Cursor, KeyHandler, Popover, Echo} from "../types";
@@ -43,7 +43,7 @@ export interface PagerState {
 
 export interface GestureState {
     popover: Popover | null;
-    focus: Keys | null;
+    focus: Key | null;
     gestureManager: GestureManager;
 }
 

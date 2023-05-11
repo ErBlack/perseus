@@ -1,6 +1,5 @@
 import VelocityTracker from "../components/velocity-tracker";
 import KeyConfigs from "../data/key-configs";
-import {KeyType} from "../enums";
 
 import {defaultKeypadType, keypadForType} from "./shared";
 
@@ -49,10 +48,7 @@ const pagerReducer = function (
             const keyConfig = KeyConfigs[action.key];
 
             // Reset the keypad page if the user performs a math operation.
-            if (
-                keyConfig.type === KeyType.VALUE ||
-                keyConfig.type === KeyType.OPERATOR
-            ) {
+            if (keyConfig.type === "VALUE" || keyConfig.type === "OPERATOR") {
                 return {
                     ...state,
                     animateToPosition: true,
