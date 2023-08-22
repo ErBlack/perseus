@@ -23,6 +23,8 @@ import type {
 } from "../../perseus-types";
 import type {APIOptions} from "../../types";
 
+jest.mock("../../dependencies");
+
 const selectOption = (index: number) => {
     const options = screen.getAllByRole("radio");
 

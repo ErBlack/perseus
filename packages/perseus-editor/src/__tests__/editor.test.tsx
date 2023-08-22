@@ -9,6 +9,15 @@ import {wait} from "../../../../testing/wait";
 import {question1} from "../__testdata__/input-number.testdata";
 import Editor from "../editor";
 
+jest.mock("@khanacademy/perseus", () => {
+    const RealPerseus = jest.requireActual("@khanacademy/perseus");
+
+    return {
+        __esModule: true,
+        ...RealPerseus,
+    };
+});
+
 describe("Editor", () => {
     beforeEach(() => {
         jest.spyOn(Dependencies, "getDependencies").mockReturnValue(

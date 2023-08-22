@@ -12,6 +12,7 @@ import {renderQuestion} from "./renderQuestion";
 
 import type {APIOptions} from "../../types";
 
+jest.mock("../../dependencies");
 const checkAnswer = () => {
     // NOTE(jeremy): The graded-group widget does not participate in
     // Renderer grading. So we can't call `renderer.score()` and see that

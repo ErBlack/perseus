@@ -7,6 +7,8 @@ import * as Dependencies from "../dependencies";
 
 import VideoTranscriptLink from "./video-transcript-link";
 
+jest.mock("../dependencies");
+
 describe("VideoTranscriptLink", () => {
     beforeEach(() => {
         jest.spyOn(Dependencies, "getDependencies").mockReturnValue({

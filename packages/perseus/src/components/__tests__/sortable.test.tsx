@@ -6,6 +6,8 @@ import {testDependencies} from "../../../../../testing/test-dependencies";
 import * as Dependencies from "../../dependencies";
 import Sortable, {Layout} from "../sortable";
 
+jest.mock("../../dependencies");
+
 describe("Sortable", () => {
     beforeEach(() => {
         jest.spyOn(Dependencies, "getDependencies").mockReturnValue(

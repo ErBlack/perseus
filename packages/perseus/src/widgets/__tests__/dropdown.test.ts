@@ -10,6 +10,8 @@ import {question1} from "../__testdata__/dropdown.testdata";
 
 import {renderQuestion} from "./renderQuestion";
 
+jest.mock("../../dependencies");
+
 describe("Dropdown widget", () => {
     beforeEach(() => {
         jest.useRealTimers();

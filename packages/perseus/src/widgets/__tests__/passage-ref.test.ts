@@ -8,6 +8,8 @@ import PassageExport from "../passage";
 
 import {renderQuestion} from "./renderQuestion";
 
+jest.mock("../../dependencies");
+
 const mockReference = (
     mock: null | {
         startLine: number;

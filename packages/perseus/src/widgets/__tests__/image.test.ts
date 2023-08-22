@@ -10,6 +10,8 @@ import {renderQuestion} from "./renderQuestion";
 import type {ImageWidget, PerseusImageWidgetOptions} from "../../perseus-types";
 import type {APIOptions} from "../../types";
 
+jest.mock("../../dependencies");
+
 describe.each([true, false])("image widget - isMobile %b", (isMobile) => {
     const apiOptions: APIOptions = {isMobile};
 

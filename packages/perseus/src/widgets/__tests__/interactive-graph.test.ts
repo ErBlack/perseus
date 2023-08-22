@@ -13,6 +13,8 @@ import type {PerseusRenderer} from "../../perseus-types";
 import type Renderer from "../../renderer";
 import type {APIOptions} from "../../types";
 
+jest.mock("../../dependencies");
+
 const updateWidgetState = (renderer: Renderer, widgetId: string, update) => {
     const state = clone(renderer.getSerializedState());
     update(state[widgetId]);
