@@ -1,30 +1,14 @@
-import {ApiOptions, Dependencies, Widgets} from "@khanacademy/perseus";
+import {ApiOptions, Widgets} from "@khanacademy/perseus";
 import {render, screen} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import "@testing-library/jest-dom"; // Imports custom mathers
 
-import {testDependencies} from "../../../../testing/test-dependencies";
 import {wait} from "../../../../testing/wait";
 import {question1} from "../__testdata__/input-number.testdata";
 import Editor from "../editor";
 
-jest.mock("@khanacademy/perseus", () => {
-    const RealPerseus = jest.requireActual("@khanacademy/perseus");
-
-    return {
-        __esModule: true,
-        ...RealPerseus,
-    };
-});
-
 describe("Editor", () => {
-    beforeEach(() => {
-        jest.spyOn(Dependencies, "getDependencies").mockReturnValue(
-            testDependencies,
-        );
-    });
-
     describe("input-number widget", () => {
         beforeEach(async () => {
             const [InputNumberWidget, InputNumberEditor] = await Promise.all([

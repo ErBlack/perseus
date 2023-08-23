@@ -13,6 +13,8 @@ import {renderQuestion} from "./renderQuestion";
 
 import type {PerseusExplanationWidgetOptions} from "../../perseus-types";
 
+jest.mock("../../dependencies");
+
 describe("Explanation", function () {
     beforeEach(() => {
         // We mock out `console.error` because the explanation widget adds
