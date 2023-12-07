@@ -60,7 +60,11 @@ const defaultOptions: HighchartsReactProps["options"] = {
     },
 };
 
-const NewGraph = (props: {
+const NewGraph = ({
+    size = [400, 400],
+    options,
+    onMouseMove,
+}: {
     size?: Size;
     options: HighchartsReact.Props["options"];
     onMouseMove?: (
@@ -72,13 +76,6 @@ const NewGraph = (props: {
     const [chartData, setChartData] = React.useState<
         object | ReadonlyArray<any> | undefined
     >();
-    const size = React.useMemo(
-        () => ({
-            width: props.size?.[0] ?? 400,
-            height: props.size?.[1] ?? 400,
-        }),
-        [props.size],
-    );
 
     const handleDumpData = React.useCallback(() => {
         setChartData(
@@ -97,8 +94,12 @@ const NewGraph = (props: {
 
             const x = Math.round(chart.xAxis[0].toValue(e.offsetX, false));
             const y = Math.round(chart.yAxis[0].toValue(e.offsetY, false));
-            props.onMouseMove?.(chart, [x, y]);
+            onMouseMove?.(chart, [x, y]);
         };
+
+        if (!onMouseMove) {
+            return;
+        }
 
         const container = chartRef?.current?.container.current;
         if (!container) {
@@ -108,7 +109,7 @@ const NewGraph = (props: {
 
         return () =>
             container.removeEventListener("mousemove", handleMouseMove);
-    }, [chartRef, props]);
+    }, [chartRef, onMouseMove]);
 
     return (
         <SideBySide
@@ -119,9 +120,9 @@ const NewGraph = (props: {
                         highcharts={Highcharts}
                         ref={chartRef}
                         options={{
-                            ...props.options,
+                            ...options,
                             chart: {
-                                ...props.options?.chart,
+                                ...options?.chart,
                                 ...size,
                             },
                         }}
@@ -143,90 +144,36 @@ const meta: Meta<typeof NewGraph> = {
 
 export const LinesDemo: Story = {
     args: {
-        onMouseMove: (chart, chartPoint) => {
-            const s = chart.series.find((s) => s.selected);
-            if (!s) {
-                return;
-            }
-
-            s.points[1].update({
-                x: chartPoint[0],
-                y: chartPoint[1],
-            });
-        },
         options: {
             ...defaultOptions,
             title: {
                 ...defaultOptions.title,
-                text: "Click to add a point, click a point to remove it, drag any point to move it",
+                text: "Drag any line endpoint to move it",
             },
-            chart: {
-                ...defaultOptions.chart,
-                events: {
-                    // Click to add a point, drag to draw line, click to finish
-                    // line.
-                    click: function (e) {
-                        const point = {
-                            // @ts-expect-error - types are wrong
-                            x: Math.round(e.xAxis[0].value),
-                            // @ts-expect-error - types are wrong
-                            y: Math.round(e.yAxis[0].value),
-                        };
+            series: new Array(4).fill(0).map((_, i, array) => {
+                const y = 5 + (10 / array.length) * i;
 
-                        // Check if we have a line that we're building (a
-                        // series with only one point).
-                        const inProgressSeries = this.series.find(
-                            (s) => s.selected,
-                        );
-
-                        if (inProgressSeries) {
-                            // Finish the line (deselect)
-                            inProgressSeries.update({
-                                type: "line",
-                                selected: false,
-                            });
-                        } else {
-                            // Start a new line
-                            this.addSeries({
-                                type: "line",
-                                color: "#00cc00",
-                                data: [point, point],
-                                selected: true,
-                                animation: false,
-                                allowPointSelect: true,
-                                enableMouseTracking: true,
-                                events: {
-                                    click: function (e) {
-                                        // If this point's series is selected,
-                                        // then we want to finish the line on
-                                        // click.  Otherwise we delete the
-                                        // line.
-                                        if (!e.point.series.selected) {
-                                            e.point.series.remove();
-                                        }
-                                    },
-                                },
-                            });
-                        }
-                    },
-                },
-            },
-            series: [
-                {
+                return {
                     type: "line",
                     color: "#00cc00",
                     data: [
-                        [-5, -5],
-                        [0, 5],
+                        [-5, y],
+                        [5, y],
                     ],
+                    dragDrop: {
+                        draggableX: true,
+                        draggableY: true,
+                        dragPrecisionX: 1,
+                        dragPrecisionY: 1,
+                    },
                     events: {
                         // Click to remove the line (series)
                         click: function (e) {
                             e.point.series.remove();
                         },
                     },
-                },
-            ],
+                };
+            }),
         },
     },
 };
