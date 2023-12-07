@@ -1,6 +1,7 @@
 import Button from "@khanacademy/wonder-blocks-button";
 import {View} from "@khanacademy/wonder-blocks-core";
 import * as Highcharts from "highcharts";
+// import more from "highcharts/highcharts-more";
 import draggable from "highcharts/modules/draggable-points";
 import {HighchartsReact} from "highcharts-react-official";
 import * as React from "react";
@@ -16,6 +17,7 @@ import type {
 
 type Story = StoryObj<typeof NewGraph>;
 
+// more(Highcharts);
 draggable(Highcharts);
 
 const defaultOptions: HighchartsReactProps["options"] = {
@@ -23,7 +25,6 @@ const defaultOptions: HighchartsReactProps["options"] = {
         text: undefined,
     },
     chart: {
-        type: "scatter",
         events: {},
     },
     xAxis: {
@@ -57,14 +58,17 @@ const defaultOptions: HighchartsReactProps["options"] = {
             },
         ],
     },
-    series: [{type: "scatter", data: [[2, 2]], color: "#00cc00"}],
 };
 
 const NewGraph = (props: {
     size?: Size;
     options: HighchartsReact.Props["options"];
+    onMouseMove?: (
+        chart: Highcharts.Chart,
+        chartPoint: [x: number, y: number],
+    ) => void;
 }) => {
-    const chart = React.useRef<HighchartsReactRefObject>(null);
+    const chartRef = React.useRef<HighchartsReactRefObject>(null);
     const [chartData, setChartData] = React.useState<
         object | ReadonlyArray<any> | undefined
     >();
@@ -78,9 +82,33 @@ const NewGraph = (props: {
 
     const handleDumpData = React.useCallback(() => {
         setChartData(
-            chart.current?.chart?.series[0].data.map((d) => ({x: d.x, y: d.y})),
+            chartRef.current?.chart?.series.map((s) =>
+                s.data.map((d) => ({x: d.x, y: d.y})),
+            ),
         );
     }, []);
+
+    React.useEffect(() => {
+        const handleMouseMove = (e) => {
+            const chart = chartRef?.current?.chart;
+            if (!chart) {
+                return;
+            }
+
+            const x = Math.round(chart.xAxis[0].toValue(e.offsetX, false));
+            const y = Math.round(chart.yAxis[0].toValue(e.offsetY, false));
+            props.onMouseMove?.(chart, [x, y]);
+        };
+
+        const container = chartRef?.current?.container.current;
+        if (!container) {
+            return;
+        }
+        container.addEventListener("mousemove", handleMouseMove);
+
+        return () =>
+            container.removeEventListener("mousemove", handleMouseMove);
+    }, [chartRef, props]);
 
     return (
         <SideBySide
@@ -89,7 +117,7 @@ const NewGraph = (props: {
                 <View>
                     <HighchartsReact
                         highcharts={Highcharts}
-                        ref={chart}
+                        ref={chartRef}
                         options={{
                             ...props.options,
                             chart: {
@@ -113,8 +141,98 @@ const meta: Meta<typeof NewGraph> = {
     component: NewGraph,
 };
 
+export const LinesDemo: Story = {
+    args: {
+        onMouseMove: (chart, chartPoint) => {
+            const s = chart.series.find((s) => s.selected);
+            if (!s) {
+                return;
+            }
+
+            s.points[1].update({
+                x: chartPoint[0],
+                y: chartPoint[1],
+            });
+        },
+        options: {
+            ...defaultOptions,
+            title: {
+                ...defaultOptions.title,
+                text: "Click to add a point, click a point to remove it, drag any point to move it",
+            },
+            chart: {
+                ...defaultOptions.chart,
+                events: {
+                    // Click to add a point, drag to draw line, click to finish
+                    // line.
+                    click: function (e) {
+                        const point = {
+                            // @ts-expect-error - types are wrong
+                            x: Math.round(e.xAxis[0].value),
+                            // @ts-expect-error - types are wrong
+                            y: Math.round(e.yAxis[0].value),
+                        };
+
+                        // Check if we have a line that we're building (a
+                        // series with only one point).
+                        const inProgressSeries = this.series.find(
+                            (s) => s.selected,
+                        );
+
+                        if (inProgressSeries) {
+                            // Finish the line (deselect)
+                            inProgressSeries.update({
+                                type: "line",
+                                selected: false,
+                            });
+                        } else {
+                            // Start a new line
+                            this.addSeries({
+                                type: "line",
+                                color: "#00cc00",
+                                data: [point, point],
+                                selected: true,
+                                animation: false,
+                                allowPointSelect: true,
+                                enableMouseTracking: true,
+                                events: {
+                                    click: function (e) {
+                                        // If this point's series is selected,
+                                        // then we want to finish the line on
+                                        // click.  Otherwise we delete the
+                                        // line.
+                                        if (!e.point.series.selected) {
+                                            e.point.series.remove();
+                                        }
+                                    },
+                                },
+                            });
+                        }
+                    },
+                },
+            },
+            series: [
+                {
+                    type: "line",
+                    color: "#00cc00",
+                    data: [
+                        [-5, -5],
+                        [0, 5],
+                    ],
+                    events: {
+                        // Click to remove the line (series)
+                        click: function (e) {
+                            e.point.series.remove();
+                        },
+                    },
+                },
+            ],
+        },
+    },
+};
+
 // https://www.highcharts.com/demo/highcharts/dynamic-click-to-add
-export const PointsDemoAddRemoveDrag: Story = {
+export const PointsDemo: Story = {
     args: {
         options: {
             ...defaultOptions,
@@ -145,6 +263,7 @@ export const PointsDemoAddRemoveDrag: Story = {
                     color: "#00cc00",
                     cursor: "grab",
 
+                    // Requires "highcharts/modules/draggable-points"
                     dragDrop: {
                         draggableX: true,
                         draggableY: true,
