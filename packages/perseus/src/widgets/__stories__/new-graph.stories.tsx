@@ -25,6 +25,8 @@ const defaultOptions: HighchartsReactProps["options"] = {
         text: undefined,
     },
     chart: {
+        width: 400,
+        height: 400,
         events: {},
     },
     xAxis: {
@@ -34,6 +36,8 @@ const defaultOptions: HighchartsReactProps["options"] = {
         maxPadding: 0.2,
         min: -10,
         max: 10,
+        startOnTick: false,
+        endOnTick: false,
         plotLines: [
             {
                 color: "#888888",
@@ -48,6 +52,8 @@ const defaultOptions: HighchartsReactProps["options"] = {
         tickPixelInterval: 1,
         min: -10,
         max: 10,
+        startOnTick: false,
+        endOnTick: false,
         plotLines: [
             {
                 color: "#888888",
@@ -151,7 +157,7 @@ export const LinesDemo: Story = {
                 text: "Drag any line endpoint to move it",
             },
             series: new Array(4).fill(0).map((_, i, array) => {
-                const y = 5 + (10 / array.length) * i;
+                const y = 5 - (10 / (array.length - 1)) * i;
 
                 return {
                     type: "line",
@@ -165,12 +171,6 @@ export const LinesDemo: Story = {
                         draggableY: true,
                         dragPrecisionX: 1,
                         dragPrecisionY: 1,
-                    },
-                    events: {
-                        // Click to remove the line (series)
-                        click: function (e) {
-                            e.point.series.remove();
-                        },
                     },
                 };
             }),
