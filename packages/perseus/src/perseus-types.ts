@@ -542,7 +542,7 @@ export type PerseusInteractiveGraphWidgetOptions = {
     // NOTE(kevinb): perseus_data.go defines this as Array<Array<number>>
     // TODO(kevinb): Add a transform function to interactive-graph.jsx to
     // rename `range` to `ranges` so that things are less confusing.
-    range: [[number, number], [number, number]];
+    range: [Coord, Coord];
     // The type of graph
     graph: PerseusGraphType;
     // The correct kind of graph, if being used to select function type

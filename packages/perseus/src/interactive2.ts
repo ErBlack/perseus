@@ -4,6 +4,8 @@ import MovablePoint from "./interactive2/movable-point";
 import MovablePolygon from "./interactive2/movable-polygon";
 import KhanColors from "./util/colors";
 
+import type {Coord, LineStyle} from "./interactive2/types";
+
 const Interactive2 = {
     MovablePoint: MovablePoint,
     addMovablePoint: function (graphie: any, options: any): any {
@@ -11,7 +13,19 @@ const Interactive2 = {
         return new MovablePoint(graphie, movable, options);
     },
     MovableLine: MovableLine,
-    addMovableLine: function (graphie: any, options: any): any {
+    addMovableLine: function (
+        graphie: any,
+        options: {
+            points: ReadonlyArray<Coord>;
+            static: boolean;
+            normalStyle?: LineStyle;
+            highlightStyle?: LineStyle;
+            constraints?: ReadonlyArray<any>;
+            onMove?: ReadonlyArray<any>;
+            extendLine?: boolean;
+            extendRay?: boolean;
+        },
+    ): any {
         const movable = new Movable(graphie, {});
         return new MovableLine(graphie, movable, options);
     },

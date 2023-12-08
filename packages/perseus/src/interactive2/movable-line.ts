@@ -11,6 +11,8 @@ import MovableLineOptions from "./movable-line-options";
 import objective_ from "./objective_";
 import WrappedLine from "./wrapped-line";
 
+import type {Coord, LineStyle} from "./types";
+
 const assert = InteractiveUtil.assert;
 const normalizeOptions = InteractiveUtil.normalizeOptions;
 
@@ -39,12 +41,26 @@ const DEFAULT_PROPS = {
     extendLine: false,
     extendRay: false,
 } as const;
+
 const DEFAULT_STATE = {
     visibleShape: null,
     mouseTarget: null,
 } as const;
 
-const MovableLine = function (graphie: any, movable: any, options: any) {
+const MovableLine = function (
+    graphie: any,
+    movable: any,
+    options: {
+        points: ReadonlyArray<Coord>;
+        static: boolean;
+        normalStyle?: LineStyle;
+        highlightStyle?: LineStyle;
+        constraints?: ReadonlyArray<any>;
+        onMove?: ReadonlyArray<any>;
+        extendLine?: boolean;
+        extendRay?: boolean;
+    },
+) {
     assert(graphie != null);
     assert(options != null);
 

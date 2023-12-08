@@ -84,7 +84,7 @@ const GraphUtils: any = {
     },
 
     // Find the angle in degrees between two or three points
-    findAngle: function (point1, point2, vertex) {
+    findAngle: function (point1: Coord, point2: Coord, vertex?: Coord) {
         if (vertex === undefined) {
             const x = point1[0] - point2[0];
             const y = point1[1] - point2[1];
@@ -225,12 +225,15 @@ GraphUtils.createGraphie = function (el: any) {
         }
     };
 
+    // https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
     const svgPath = function (points: any, alreadyScaled) {
         return $.map(points, function (point, i) {
             if (point === true) {
+                // z == close path
                 return "z";
             }
             const scaled = alreadyScaled ? point : scalePoint(point);
+            // M == move to, L == line to
             return (
                 (i === 0 ? "M" : "L") +
                 KhanMath.bound(scaled[0]) +
@@ -382,9 +385,6 @@ GraphUtils.createGraphie = function (el: any) {
 
         return path;
     };
-
-    // `svgPath` is independent of graphie range, so we export it independently
-    GraphUtils.svgPath = svgPath;
 
     const processAttributes = function (attrs) {
         const transformers = {

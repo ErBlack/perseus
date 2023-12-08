@@ -4,7 +4,7 @@ import * as React from "react";
 import ReactJson from "react-json-view";
 
 type Props = {
-    leftTitle: string;
+    leftTitle?: string;
     left: React.ReactNode;
     rightTitle?: string;
     jsonObject: any;

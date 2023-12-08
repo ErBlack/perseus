@@ -457,7 +457,7 @@ class InteractiveGraph extends React.Component<Props, State> {
         return this.props.isMobile ? {"stroke-width": 3} : {};
     };
 
-    addLine: (arg1: string) => void = (type) => {
+    addLine: (lineType: "line" | "ray") => void = (type) => {
         const self = this;
         const graphie = self.graphie;
         const coords = InteractiveGraph.getLineCoords(
@@ -1377,7 +1377,7 @@ class InteractiveGraph extends React.Component<Props, State> {
         this.points = [];
         this.lines = _.map(
             coords,
-            function (segment, i) {
+            (segment, i) => {
                 const updateCoordProps = function () {
                     const graph = _.extend({}, self.props.graph, {
                         // @ts-expect-error - TS2345 - Argument of type 'readonly (readonly Coord[])[] | null | undefined' is not assignable to parameter of type 'Collection<any>'.
@@ -1439,19 +1439,15 @@ class InteractiveGraph extends React.Component<Props, State> {
                         updateCoordProps,
                     ],
                     normalStyle: {
-                        // @ts-expect-error - TS2683 - 'this' implicitly has type 'any' because it does not have a type annotation.
                         stroke: this.props.apiOptions.isMobile
                             ? KhanColors.BLUE_C
                             : KhanColors.INTERACTIVE,
-                        // @ts-expect-error - TS2683 - 'this' implicitly has type 'any' because it does not have a type annotation.
                         ...this._lineStroke(),
                     },
                     highlightStyle: {
-                        // @ts-expect-error - TS2683 - 'this' implicitly has type 'any' because it does not have a type annotation.
                         stroke: this.props.apiOptions.isMobile
                             ? KhanColors.BLUE_C
                             : KhanColors.INTERACTING,
-                        // @ts-expect-error - TS2683 - 'this' implicitly has type 'any' because it does not have a type annotation.
                         ...this._lineStroke(),
                     },
                 });
@@ -2108,7 +2104,10 @@ class InteractiveGraph extends React.Component<Props, State> {
     }
 
     static pointsFromNormalized(
-        props: Props,
+        props: {
+            range: [xRange: Coord, yRange: Coord];
+            step: [number, number];
+        },
         coordsList: ReadonlyArray<Coord>,
         noSnap?: boolean,
     ): ReadonlyArray<Coord> {
