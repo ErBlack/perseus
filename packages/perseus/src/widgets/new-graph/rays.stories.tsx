@@ -4,7 +4,8 @@ import * as Highcharts from "highcharts";
 // import more from "highcharts/highcharts-more";
 // import debuggable from "highcharts/modules/debugger";
 import HighchartsAnnotationsModule from "highcharts/modules/annotations";
-import draggable from "highcharts/modules/draggable-points";
+import HighchartsDraggableModule from "highcharts/modules/draggable-points";
+import HighchartsAccessibilityModule from "highcharts/modules/accessibility";
 import {HighchartsReact} from "highcharts-react-official";
 import * as React from "react";
 
@@ -21,10 +22,9 @@ import type {
 
 type Story = StoryObj<typeof NewGraph>;
 
-// more(Highcharts);
-draggable(Highcharts);
-// debuggable(Highcharts);
+HighchartsAccessibilityModule(Highcharts);
 HighchartsAnnotationsModule(Highcharts);
+HighchartsDraggableModule(Highcharts);
 
 // Not recommended: https://stackoverflow.com/a/58484863/11807
 const customRendererOption: Highcharts.ChartEventsOptions = {

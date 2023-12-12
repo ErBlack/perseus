@@ -1,8 +1,8 @@
 import Button from "@khanacademy/wonder-blocks-button";
 import {View} from "@khanacademy/wonder-blocks-core";
 import * as Highcharts from "highcharts";
-// import more from "highcharts/highcharts-more";
-import draggable from "highcharts/modules/draggable-points";
+import HighchartsDraggableModule from "highcharts/modules/draggable-points";
+import HighchartsAccessibilityModule from "highcharts/modules/accessibility";
 import {HighchartsReact} from "highcharts-react-official";
 import * as React from "react";
 
@@ -18,8 +18,8 @@ import type {
 
 type Story = StoryObj<typeof NewGraph>;
 
-// more(Highcharts);
-draggable(Highcharts);
+HighchartsAccessibilityModule(Highcharts);
+HighchartsDraggableModule(Highcharts);
 
 const NewGraph = () => {
     const chartRef = React.useRef<HighchartsReactRefObject>(null);
