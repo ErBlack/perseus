@@ -29,6 +29,7 @@
         "@khanacademy/perseus-linter": "^0.3.10",
         "@khanacademy/pure-markdown": "^0.2.13",
         "@khanacademy/simple-markdown": "^0.11.2",
+        "@svgdotjs/svg.js": "^3.2.0",
         "highcharts": "^11.2.0",
         "highcharts-react-official": "^3.2.1"
     },

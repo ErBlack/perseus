@@ -60,7 +60,7 @@ const draw = {
         // @ts-expect-error - TS2339 - Property 'state' does not exist on type '{ readonly basic: (state: any, prevState: any) => void; readonly labels: (state: any, prevState: any) => void; readonly highlight: (state: any, prevState: any) => void; }'.
         if (!this.state.visibleShape) {
             // @ts-expect-error - TS2339 - Property 'state' does not exist on type '{ readonly basic: (state: any, prevState: any) => void; readonly labels: (state: any, prevState: any) => void; readonly highlight: (state: any, prevState: any) => void; }'.
-            this.state.visibleShape = graphie.raphael.path(path);
+            this.state.visibleShape = graphie.svgjs.path(path);
             // @ts-expect-error - TS2339 - Property 'state' does not exist on type '{ readonly basic: (state: any, prevState: any) => void; readonly labels: (state: any, prevState: any) => void; readonly highlight: (state: any, prevState: any) => void; }'. | TS2339 - Property 'normalStyle' does not exist on type '{ readonly basic: (state: any, prevState: any) => void; readonly labels: (state: any, prevState: any) => void; readonly highlight: (state: any, prevState: any) => void; }'.
             this.state.visibleShape.attr(this.normalStyle());
         }

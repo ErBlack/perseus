@@ -48,7 +48,7 @@ const WrappedDefaults: any = _.extend(
         },
 
         getMouseTarget: function () {
-            return this.visibleShape[0];
+            return this.visibleShape.node;
         },
 
         moveTo: function (point) {

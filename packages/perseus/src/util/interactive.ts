@@ -14,8 +14,7 @@ import {
     line as kline,
 } from "@khanacademy/kmath";
 import $ from "jquery";
-// eslint-disable-next-line import/no-extraneous-dependencies
-import Raphael from "raphael";
+import {SVG, Container, Shape} from "@svgdotjs/svg.js";
 import _ from "underscore";
 
 // NOTE(jeresig): We include a special copy of jQuery vmouse so
@@ -130,11 +129,9 @@ _.extend(GraphUtils.Graphie.prototype, {
         );
 
         const mouselayerZIndex = 2;
-        graph.mouselayer = Raphael(
-            graph.raphael.canvas.parentNode,
-            graph.xpixels,
-            graph.ypixels,
-        );
+        graph.mouselayer = SVG()
+            .addTo(graph.svgjs.parent())
+            .size(graph.xpixels, graph.ypixels);
         $(graph.mouselayer.canvas).css("z-index", mouselayerZIndex);
         if (
             options.onClick ||
@@ -213,7 +210,7 @@ _.extend(GraphUtils.Graphie.prototype, {
             top: 0,
         });
 
-        const el = graph.raphael.canvas.parentNode;
+        const el = graph.svgjs.parent().node;
         el.appendChild(graph._visiblelayerWrapper);
         el.appendChild(graph._mouselayerWrapper);
 
@@ -234,10 +231,10 @@ _.extend(GraphUtils.Graphie.prototype, {
 
         const mouseX =
             // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
-            event.pageX - $(graphie.raphael.canvas.parentNode).offset().left;
+            event.pageX - $(graphie.svgjs.parent().node).offset().left;
         const mouseY =
             // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
-            event.pageY - $(graphie.raphael.canvas.parentNode).offset().top;
+            event.pageY - $(graphie.svgjs.parent().node).offset().top;
 
         return [mouseX, mouseY];
     },
@@ -1642,8 +1639,7 @@ _.extend(GraphUtils.Graphie.prototype, {
                             // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
                             (event.pageX -
                                 // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
-                                $(graph.raphael.canvas.parentNode).offset()
-                                    .left) /
+                                $(graph.svgjs.parent()).offset().left) /
                                 graph.scale[0] +
                             graph.range[0][0];
                         let coordY =
@@ -1651,8 +1647,7 @@ _.extend(GraphUtils.Graphie.prototype, {
                             // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
                             (event.pageY -
                                 // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
-                                $(graph.raphael.canvas.parentNode).offset()
-                                    .top) /
+                                $(graph.svgjs.parent()).offset().top) /
                                 graph.scale[1];
                         if (lineSegment.snapX > 0) {
                             coordX =
@@ -1701,14 +1696,12 @@ _.extend(GraphUtils.Graphie.prototype, {
                                     // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
                                     event.pageX -
                                     // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
-                                    $(graph.raphael.canvas.parentNode).offset()
-                                        .left;
+                                    $(graph.svgjs.parent()).offset().left;
                                 let mouseY =
                                     // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
                                     event.pageY -
                                     // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
-                                    $(graph.raphael.canvas.parentNode).offset()
-                                        .top;
+                                    $(graph.svgjs.parent()).offset().top;
                                 // no part of the line segment can go beyond 10
                                 // pixels from the edge
                                 mouseX = Math.max(
@@ -2125,7 +2118,7 @@ _.extend(GraphUtils.Graphie.prototype, {
 
         polygon.update();
 
-        polygon.visibleShape = graphie.raphael.path(polygon.path);
+        polygon.visibleShape = graphie.svgjs.path(polygon.path);
         polygon.visibleShape.attr(polygon.normalStyle);
 
         if (!polygon.fixed) {
@@ -2190,8 +2183,7 @@ _.extend(GraphUtils.Graphie.prototype, {
                             // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
                             (event.pageX -
                                 // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
-                                $(graphie.raphael.canvas.parentNode).offset()
-                                    .left) /
+                                $(graphie.svgjs.parent().node).offset().left) /
                                 graphie.scale[0] +
                             graphie.range[0][0];
                         let startY =
@@ -2199,8 +2191,7 @@ _.extend(GraphUtils.Graphie.prototype, {
                             // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
                             (event.pageY -
                                 // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
-                                $(graphie.raphael.canvas.parentNode).offset()
-                                    .top) /
+                                $(graphie.svgjs.parent().node).offset().top) /
                                 graphie.scale[1];
                         if (polygon.snapX > 0) {
                             startX =
@@ -2238,16 +2229,13 @@ _.extend(GraphUtils.Graphie.prototype, {
                                     // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
                                     event.pageX -
                                     // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
-                                    $(
-                                        graphie.raphael.canvas.parentNode,
-                                    ).offset().left;
+                                    $(graphie.svgjs.parent().node).offset()
+                                        .left;
                                 let mouseY =
                                     // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
                                     event.pageY -
                                     // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
-                                    $(
-                                        graphie.raphael.canvas.parentNode,
-                                    ).offset().top;
+                                    $(graphie.svgjs.parent().node).offset().top;
 
                                 // no part of the polygon can go beyond 10 pixels from
                                 // the edge
@@ -2541,11 +2529,11 @@ _.extend(GraphUtils.Graphie.prototype, {
         }
 
         circle.toFront = function () {
-            circle.circ.toFront();
-            circle.perim.toFront();
+            circle.circ.front();
+            circle.perim.front();
             circle.centerPoint.visibleShape.toFront();
             if (!circle.centerConstraints.fixed) {
-                circle.centerPoint.mouseTarget.toFront();
+                circle.centerPoint.mouseTarget.front();
             }
         };
 
@@ -2766,7 +2754,7 @@ _.extend(GraphUtils.Graphie.prototype, {
 
             // Draw the double-headed arrow thing that shows users where to
             // click and drag to rotate
-            return graphie.raphael
+            return graphie.svgjs
                 .path(
                     // upper arrowhead
                     " M" +
@@ -3230,7 +3218,7 @@ _.extend(GraphUtils.Graphie.prototype, {
 
 function Protractor(graph: any, center: any) {
     // @ts-expect-error - TS2683 - 'this' implicitly has type 'any' because it does not have a type annotation.
-    this.set = graph.raphael.set();
+    this.set = graph.svgjs.group();
 
     // @ts-expect-error - TS2683 - 'this' implicitly has type 'any' because it does not have a type annotation.
     this.cx = center[0];
@@ -3254,7 +3242,7 @@ function Protractor(graph: any, center: any) {
         180,
     );
     // @ts-expect-error - TS2683 - 'this' implicitly has type 'any' because it does not have a type annotation.
-    this.set.push(image);
+    this.set.add(image);
 
     // Prevent the page from scrolling when we grab and drag the image on a
     // mobile device.
@@ -3282,7 +3270,7 @@ function Protractor(graph: any, center: any) {
         return x + "," + y;
     };
 
-    const arrow = graph.raphael
+    const arrow = graph.svgjs
         .path(
             " M" +
                 arrowHelper(180, 6) +
@@ -3421,22 +3409,22 @@ function Protractor(graph: any, center: any) {
             event.preventDefault();
             let startx =
                 // @ts-expect-error - TS2532 - Object is possibly 'undefined'. | TS2532 - Object is possibly 'undefined'.
-                event.pageX - $(graph.raphael.canvas.parentNode).offset().left;
+                event.pageX - $(graph.svgjs.parent()).offset().left;
             let starty =
                 // @ts-expect-error - TS2532 - Object is possibly 'undefined'. | TS2532 - Object is possibly 'undefined'.
-                event.pageY - $(graph.raphael.canvas.parentNode).offset().top;
+                event.pageY - $(graph.svgjs.parent()).offset().top;
 
             $(document).bind("vmousemove.protractor", function (event) {
                 let mouseX =
                     // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
                     event.pageX -
                     // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
-                    $(graph.raphael.canvas.parentNode).offset().left;
+                    $(graph.svgjs.parent()).offset().left;
                 let mouseY =
                     // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
                     event.pageY -
                     // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
-                    $(graph.raphael.canvas.parentNode).offset().top;
+                    $(graph.svgjs.parent()).offset().top;
                 // can't go beyond 10 pixels from the edge
                 mouseX = Math.max(10, Math.min(graph.xpixels - 10, mouseX));
                 mouseY = Math.max(10, Math.min(graph.ypixels - 10, mouseY));
@@ -3626,11 +3614,11 @@ function Ruler(graphie: any, options: any) {
 
     const numTicks = options.units * options.ticksPerUnit + 1;
 
-    const set = graphie.raphael.set();
+    const set = graphie.svgjs.group();
 
     const px = 1 / graphie.scale[0];
-    set.push(graphie.line([left - px, bottom], [right + px, bottom], bold));
-    set.push(graphie.line([left - px, top], [right + px, top], bold));
+    set.add(graphie.line([left - px, bottom], [right + px, bottom], bold));
+    set.add(graphie.line([left - px, top], [right + px, top], bold));
 
     _.times(numTicks, function (i) {
         const n = i / options.ticksPerUnit;
@@ -3638,7 +3626,7 @@ function Ruler(graphie: any, options: any) {
         const height = getTickHeight(i) * graphieUnitsHeight;
 
         const style = i === 0 || i === numTicks - 1 ? bold : light;
-        set.push(graphie.line([x, bottom], [x, bottom + height], style));
+        set.add(graphie.line([x, bottom], [x, bottom + height], style));
 
         if (n % 1 === 0) {
             const coord = graphie.scalePoint([x, top]);
@@ -3664,7 +3652,7 @@ function Ruler(graphie: any, options: any) {
                 text = n;
                 offset = -3 * (n.toString().length + 1);
             }
-            const label = graphie.raphael.text(
+            const label = graphie.svgjs.text(
                 coord[0] + offset,
                 coord[1] + 10,
                 text,
@@ -3674,7 +3662,7 @@ function Ruler(graphie: any, options: any) {
                 "font-size": "12px",
                 color: "#444",
             });
-            set.push(label);
+            set.add(label);
         }
     });
 
@@ -3714,20 +3702,20 @@ function Ruler(graphie: any, options: any) {
         event.preventDefault();
         let startx =
             // @ts-expect-error - TS2532 - Object is possibly 'undefined'. | TS2532 - Object is possibly 'undefined'.
-            event.pageX - $(graphie.raphael.canvas.parentNode).offset().left;
+            event.pageX - $(graphie.svgjs.parent().node).offset().left;
         let starty =
             // @ts-expect-error - TS2532 - Object is possibly 'undefined'. | TS2532 - Object is possibly 'undefined'.
-            event.pageY - $(graphie.raphael.canvas.parentNode).offset().top;
+            event.pageY - $(graphie.svgjs.parent().node).offset().top;
 
         $(document).bind("vmousemove.ruler", function (event) {
             let mouseX =
                 // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
                 event.pageX -
                 // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
-                $(graphie.raphael.canvas.parentNode).offset().left;
+                $(graphie.svgjs.parent().node).offset().left;
             let mouseY =
                 // @ts-expect-error - TS2532 - Object is possibly 'undefined'. | TS2532 - Object is possibly 'undefined'.
-                event.pageY - $(graphie.raphael.canvas.parentNode).offset().top;
+                event.pageY - $(graphie.svgjs.parent().node).offset().top;
             // can't go beyond 10 pixels from the edge
             mouseX = Math.max(10, Math.min(graphie.xpixels - 10, mouseX));
             mouseY = Math.max(10, Math.min(graphie.ypixels - 10, mouseY));

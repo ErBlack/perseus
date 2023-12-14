@@ -170,7 +170,7 @@ _.extend(Movable.prototype, {
             if (state.mouseTarget.getMouseTarget) {
                 $mouseTarget = $(state.mouseTarget.getMouseTarget());
             } else {
-                $mouseTarget = $(state.mouseTarget[0]);
+                $mouseTarget = $(state.mouseTarget.node);
             }
 
             const isMouse = !("ontouchstart" in window);

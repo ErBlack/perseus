@@ -391,7 +391,8 @@ class InteractiveGraph extends React.Component<Props, State> {
             // Only if trash tooltips are not being used, we initialize the old
             // trash can area.
             if (!this.trashCan) {
-                this.trashCan = graphie?.raphael?.image(
+                // STOPSHIP
+                this.trashCan = graphie?.svgjs?.image(
                     TRASH_ICON_URI,
                     graphie.xpixels - 40,
                     graphie.ypixels - 40,
@@ -645,7 +646,7 @@ class InteractiveGraph extends React.Component<Props, State> {
                     : KhanColors.DYNAMIC,
                 ...this._lineStroke(),
             });
-            this.parabola?.toBack();
+            this.parabola?.back();
         }
     };
 
@@ -741,7 +742,7 @@ class InteractiveGraph extends React.Component<Props, State> {
                     : KhanColors.DYNAMIC,
                 ...this._lineStroke(),
             });
-            this.sinusoid?.toBack();
+            this.sinusoid?.back();
         }
     };
 

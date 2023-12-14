@@ -1,13 +1,8 @@
 /* eslint-disable @babel/no-invalid-this */
 import {point as kpoint, vector as kvector} from "@khanacademy/kmath";
+import {SVG, Container, Element, G, Path, Shape} from "@svgdotjs/svg.js";
 import $ from "jquery";
-// eslint-disable-next-line import/no-extraneous-dependencies
-import Raphael from "raphael";
 import _ from "underscore";
-
-// Minify Raphael ourselves because IE8 has a problem with the 1.5.2 minified
-// release
-// http://groups.google.com/group/raphaeljs/browse_thread/thread/c34c75ad8d431544
 
 import {Errors, Log} from "../logging/log";
 import {PerseusError} from "../perseus-error";
@@ -134,14 +129,14 @@ const SVG_SPECIFIC_STYLE_MASK = {
     "stroke-width": null,
 } as const;
 
-GraphUtils.createGraphie = function (el: any) {
+GraphUtils.createGraphie = function (el: HTMLElement) {
     let xScale = 40;
     let yScale = 40;
     let xRange;
     let yRange;
 
     $(el).css("position", "relative");
-    const raphael = Raphael(el);
+    const svgjs = SVG().addTo(el);
 
     // For a sometimes-reproducible IE8 bug; doesn't affect SVG browsers at all
     $(el).children("div").css("position", "absolute");
@@ -226,7 +221,7 @@ GraphUtils.createGraphie = function (el: any) {
     };
 
     // https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
-    const svgPath = function (points: any, alreadyScaled) {
+    const svgPath = function (points: any, alreadyScaled: boolean = true) {
         return $.map(points, function (point, i) {
             if (point === true) {
                 // z == close path
@@ -253,7 +248,6 @@ GraphUtils.createGraphie = function (el: any) {
             const points = _.map(xRange, function (x) {
                 return [x, computeParabola(x)];
             });
-            // @ts-expect-error - TS2554 - Expected 2 arguments, but got 1.
             return svgPath(points);
         }
 
@@ -397,7 +391,7 @@ GraphUtils.createGraphie = function (el: any) {
                 yScale = scale[1];
 
                 // Update the canvas size
-                raphael.setSize(
+                svgjs.size(
                     (xRange[1] - xRange[0]) * xScale,
                     (yRange[1] - yRange[0]) * yScale,
                 );
@@ -452,25 +446,26 @@ GraphUtils.createGraphie = function (el: any) {
         return processed;
     };
 
-    const addArrowheads = function arrows(path: any) {
+    const addArrowheads = function arrows(path: Element) {
         const type = path.constructor.prototype;
 
-        if (type === Raphael.el) {
+        console.log("addArrowheads", type, path);
+        if (path instanceof Shape) {
             if (
-                path.type === "path" &&
-                typeof path.arrowheadsDrawn === "undefined"
+                path instanceof Path &&
+                typeof path.data("arrowheadsDrawn") === "undefined"
             ) {
                 const w = path.attr("stroke-width");
                 const s = 0.6 + 0.4 * w;
-                const l = path.getTotalLength();
-                const set = raphael.set();
-                const head = raphael.path(
+                const l = path.length();
+                const set = svgjs.group();
+                const head = svgjs.path(
                     graphie.isMobile
                         ? "M-4,4 C-4,4 -0.25,0 -0.25,0 C-0.25,0 -4,-4 -4,-4"
                         : "M-3 4 C-2.75 2.5 0 0.25 0.75 0C0 -0.25 -2.75 -2.5 -3 -4",
                 );
-                const end = path.getPointAtLength(l - 0.4);
-                const almostTheEnd = path.getPointAtLength(l - 0.75 * s);
+                const end = path.pointAt(l - 0.4);
+                const almostTheEnd = path.pointAt(l - 0.75 * s);
                 const angle =
                     (Math.atan2(
                         end.y - almostTheEnd.y,
@@ -481,10 +476,12 @@ GraphUtils.createGraphie = function (el: any) {
                 const attrs = path.attr();
                 delete attrs.path;
 
-                let subpath = path.getSubpath(0, l - 0.75 * s);
-                subpath = raphael.path(subpath).attr(attrs);
-                subpath.arrowheadsDrawn = true;
-                path.remove();
+                // STOPSHIP
+                // let subpath = path.getSubpath(0, l - 0.75 * s);
+                // subpath = svgjs.path(subpath);
+                // subpath.attr(attrs);
+                // subpath.arrowheadsDrawn = true;
+                // path.remove();
 
                 // For some unknown reason 0 doesn't work for the rotation
                 // origin so we use a tiny number.
@@ -497,32 +494,32 @@ GraphUtils.createGraphie = function (el: any) {
                         "stroke-linecap": "round",
                     });
 
-                head.arrowheadsDrawn = true;
-                set.push(subpath);
-                set.push(head);
+                head.data("arrowheadsDrawn", true);
+                // set.add(subpath);
+                set.add(head);
                 return set;
             }
-        } else if (type === Raphael.st) {
-            for (let i = 0, l = path.items.length; i < l; i++) {
-                arrows(path.items[i]);
-            }
+        } else if (path instanceof Container) {
+            path.each((i, item) => {
+                arrows(item[i]);
+            });
         }
         return path;
     };
 
     const drawingTools: any = {
         circle: function (center, radius) {
-            return raphael.ellipse(
+            return svgjs.ellipse(
                 ...scalePoint(center).concat(scaleVector([radius, radius])),
             );
         },
 
         // (x, y) is coordinate of bottom left corner
         rect: function (x, y, width, height) {
-            // Raphael needs (x, y) to be coordinate of upper left corner
+            // SVG.js needs (x, y) to be coordinate of upper left corner
             const corner = scalePoint([x, y + height]);
             const dims = scaleVector([width, height]);
-            const elem = raphael.rect(...corner.concat(dims));
+            const elem = svgjs.rect(...corner.concat(dims));
 
             if (graphie.isMobile) {
                 elem.node.style.shapeRendering = "crispEdges";
@@ -532,7 +529,7 @@ GraphUtils.createGraphie = function (el: any) {
         },
 
         ellipse: function (center, radii) {
-            return raphael.ellipse(
+            return svgjs.ellipse(
                 ...scalePoint(center).concat(scaleVector(radii)),
             );
         },
@@ -566,14 +563,12 @@ GraphUtils.createGraphie = function (el: any) {
             });
             // wrapper.setAttribute("data-graphie-type", "ellipse");
 
-            // Create Raphael canvas
-            const localRaphael = Raphael(wrapper, width, height);
-            const visibleShape = localRaphael.ellipse(
-                width / 2,
-                height / 2,
-                scaledRadii[0],
-                scaledRadii[1],
-            );
+            // Create SVGJS canvas
+            const localSvgJs = SVG().addTo(wrapper);
+            localSvgJs.size(width, height);
+            const visibleShape = localSvgJs
+                .ellipse(width / 2, height / 2)
+                .radius(scaledRadii[0], scaledRadii[1]);
 
             return {
                 wrapper: wrapper,
@@ -602,7 +597,7 @@ GraphUtils.createGraphie = function (el: any) {
             const largeAngle =
                 (((endAngle - startAngle) % 360) + 360) % 360 > 180;
 
-            return raphael.path(
+            return svgjs.path(
                 "M" +
                     startPoint.join(" ") +
                     "A" +
@@ -616,9 +611,8 @@ GraphUtils.createGraphie = function (el: any) {
         },
 
         path: function (points) {
-            // @ts-expect-error - TS2554 - Expected 2 arguments, but got 1.
-            const p = raphael.path(svgPath(points));
-            p.graphiePath = points;
+            const p = svgjs.path(svgPath(points));
+            p.data("graphiePath", points);
 
             return p;
         },
@@ -673,11 +667,11 @@ GraphUtils.createGraphie = function (el: any) {
                     : null,
             } as any);
 
-            // Create Raphael canvas
-            const localRaphael = Raphael(wrapper, width, height);
+            // Create SVG.js canvas
+            const localSvgJs = SVG().addTo(wrapper).size(width, height);
 
             // Calculate path
-            const visibleShape = localRaphael.path(createPath(points));
+            const visibleShape = localSvgJs.path(createPath(points));
 
             return {
                 wrapper: wrapper,
@@ -685,13 +679,13 @@ GraphUtils.createGraphie = function (el: any) {
             };
         },
 
-        scaledPath: function (points) {
-            const p = raphael.path(svgPath(points, /* alreadyScaled */ true));
-            p.graphiePath = points;
+        scaledPath: function (points): Path {
+            const p = svgjs.path(svgPath(points, /* alreadyScaled */ true));
+            p.data("graphiePath", points);
             return p;
         },
 
-        line: function (start, end) {
+        line: function (start, end): Path {
             const l = this.path([start, end]);
 
             if (graphie.isMobile) {
@@ -701,9 +695,9 @@ GraphUtils.createGraphie = function (el: any) {
             return l;
         },
 
-        parabola: function (a, b, c) {
+        parabola: function (a, b, c): Path {
             // Plot a parabola of the form: f(x) = (a * x + b) * x + c
-            return raphael.path(svgParabolaPath(a, b, c));
+            return svgjs.path(svgParabolaPath(a, b, c));
         },
 
         fixedLine: function (start, end, thickness) {
@@ -749,8 +743,8 @@ GraphUtils.createGraphie = function (el: any) {
                 transformOrigin: start[0] + "px " + start[1] + "px",
             });
 
-            // Create Raphael canvas
-            const localRaphael = Raphael(wrapper, width, height);
+            // Create SVG.js canvas
+            const localSvgJs = SVG().addTo(wrapper).size(width, height);
 
             // Calculate path
             const path =
@@ -763,8 +757,8 @@ GraphUtils.createGraphie = function (el: any) {
                 end[0] +
                 " " +
                 end[1];
-            const visibleShape = localRaphael.path(path);
-            visibleShape.graphiePath = [start, end];
+            const visibleShape = localSvgJs.path(path);
+            visibleShape.data("graphiePath", [start, end]);
 
             return {
                 wrapper: wrapper,
@@ -772,23 +766,23 @@ GraphUtils.createGraphie = function (el: any) {
             };
         },
 
-        sinusoid: function (a, b, c, d) {
+        sinusoid: function (a, b, c, d): Path {
             // Plot a sinusoid of the form: f(x) = a * sin(b * x - c) + d
-            return raphael.path(svgSinusoidPath(a, b, c, d));
+            return svgjs.path(svgSinusoidPath(a, b, c, d));
         },
 
-        grid: function (xr, yr) {
+        grid: function (xr, yr): G {
             const step: any = currentStyle.step || [1, 1];
-            const set = raphael.set();
+            const set = svgjs.group();
 
             let x = step[0] * Math.ceil(xr[0] / step[0]);
             for (; x <= xr[1]; x += step[0]) {
-                set.push(this.line([x, yr[0]], [x, yr[1]]));
+                set.add(this.line([x, yr[0]], [x, yr[1]]));
             }
 
             let y = step[1] * Math.ceil(yr[0] / step[1]);
             for (; y <= yr[1]; y += step[1]) {
-                set.push(this.line([xr[0], y], [xr[1], y]));
+                set.add(this.line([xr[0], y], [xr[1], y]));
             }
 
             return set;
@@ -857,7 +851,7 @@ GraphUtils.createGraphie = function (el: any) {
             return $span;
         },
 
-        plotParametric: function (fn, range, shade, fn2) {
+        plotParametric: function (fn, range, shade, fn2): G {
             // Note: fn2 should only be set if 'shade' is true, as it denotes
             // the function between which fn should have its area shaded.
             // In general, plotParametric shouldn't be used to shade the area
@@ -897,7 +891,7 @@ GraphUtils.createGraphie = function (el: any) {
                 step = 1;
             }
 
-            const paths = raphael.set();
+            const paths = svgjs.group();
             let points = [];
             let lastDiff = GraphUtils.coordDiff(
                 clippedFn(min),
@@ -932,7 +926,7 @@ GraphUtils.createGraphie = function (el: any) {
                         }
                         lastFlip = t;
                     }
-                    paths.push(this.path(points));
+                    paths.add(this.path(points));
                     // restart the path, excluding this point
                     points = [];
                     if (shade) {
@@ -955,7 +949,7 @@ GraphUtils.createGraphie = function (el: any) {
                     points.push(clippedFn2(u));
                 }
             }
-            paths.push(this.path(points));
+            paths.add(this.path(points));
 
             return paths;
         },
@@ -1025,7 +1019,7 @@ GraphUtils.createGraphie = function (el: any) {
         },
 
         /**
-         * Given a piecewise function, return a Raphael set of paths that
+         * Given a piecewise function, return a SVG.js group of paths that
          * can be used to draw the function, e.g. using style().
          * Calls plotParametric.
          *
@@ -1034,10 +1028,10 @@ GraphUtils.createGraphie = function (el: any) {
          *                         the function at i
          * @param  {[]} rangeArray array of ranges over which the
          *                         corresponding functions are defined
-         * @return {Set<any>}      set of paths
+         * @return {G<any>}      set of paths
          */
-        plotPiecewise: function (fnArray, rangeArray) {
-            const paths = raphael.set();
+        plotPiecewise: function (fnArray, rangeArray): G {
+            const paths = svgjs.group();
             const self = this;
             _.times(fnArray.length, function (i) {
                 const fn = fnArray[i];
@@ -1046,7 +1040,7 @@ GraphUtils.createGraphie = function (el: any) {
                     return [x, fn(x)];
                 }, range);
                 _.each(fnPaths, function (fnPath) {
-                    paths.push(fnPath);
+                    paths.add(fnPath);
                 });
             });
 
@@ -1055,29 +1049,29 @@ GraphUtils.createGraphie = function (el: any) {
 
         /**
          * Given an array of coordinates of the form [x, y], create and
-         * return a Raphael set of Raphael circle objects at those
+         * return a SVG.js set of SVG.js circle objects at those
          * coordinates
          *
          * @param  {Array<[number, number]>} endpointArray
          * @return {Set<any>} set of circles
          */
-        plotEndpointCircles: function (endpointArray) {
-            const circles = raphael.set();
+        plotEndpointCircles: function (endpointArray): G {
+            const circles = svgjs.group();
             const self = this;
 
             _.each(endpointArray, function (coord, i) {
-                circles.push(self.circle(coord, 0.15));
+                circles.add(self.circle(coord, 0.15));
             });
 
             return circles;
         },
 
-        plotAsymptotes: function (fn, range) {
+        plotAsymptotes: function (fn, range): G {
             const min = range[0];
             const max = range[1];
             const step = (max - min) / (currentStyle["plot-points"] || 800);
 
-            const asymptotes = raphael.set();
+            const asymptotes = svgjs.group();
             let lastVal = fn(min);
 
             for (let t = min; t <= max; t += step) {
@@ -1087,7 +1081,7 @@ GraphUtils.createGraphie = function (el: any) {
                     funcVal < 0 !== lastVal < 0 &&
                     Math.abs(funcVal - lastVal) > 2 * yScale
                 ) {
-                    asymptotes.push(this.line([t, yScale], [t, -yScale]));
+                    asymptotes.add(this.line([t, yScale], [t, -yScale]));
                 }
 
                 lastVal = funcVal;
@@ -1099,7 +1093,7 @@ GraphUtils.createGraphie = function (el: any) {
 
     const graphie = new Graphie();
     _.extend(graphie, {
-        raphael: raphael,
+        svgjs: svgjs,
 
         init: function (options) {
             let scale = options.scale || [40, 40];
@@ -1120,7 +1114,7 @@ GraphUtils.createGraphie = function (el: any) {
 
             const w = (xRange[1] - xRange[0]) * xScale;
             const h = (yRange[1] - yRange[0]) * yScale;
-            raphael.setSize(w, h);
+            svgjs.size(w, h);
 
             $(el).css({
                 width: w,
@@ -1185,16 +1179,17 @@ GraphUtils.createGraphie = function (el: any) {
                 result = drawingTools[name](...args);
             }
 
-            // Bad heuristic for recognizing Raphael elements and sets
-            const type = result.constructor.prototype;
-            if (type === Raphael.el || type === Raphael.st) {
+            // STOPSHIP: Some results are Wrapped and have a `.visibleShape`
+            // that is an SVG instance. Original code didn't handle this
+            // either.
+            if (result instanceof Shape || result instanceof Container) {
                 result.attr(currentStyle);
 
                 if (currentStyle.arrows) {
                     result = addArrowheads(result);
                 }
             } else if (result instanceof $) {
-                // We assume that if it's not a Raphael element/set, it
+                // We assume that if it's not a SVG.js element/set, it
                 // does not contain SVG.
                 // @ts-expect-error - TS2339 - Property 'css' does not exist on type '{}'.
                 result.css({...currentStyle, ...SVG_SPECIFIC_STYLE_MASK});

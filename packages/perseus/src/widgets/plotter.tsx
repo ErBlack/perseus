@@ -969,7 +969,8 @@ export class Plotter extends React.Component<Props, State> {
         return this.setupTiledPlot(i, 0, config, (x, y) => {
             const scaledCenter = graphie.scalePoint([x, y]);
             const size = this.props.picSize;
-            return graphie.raphael.image(
+            // STOPSHIP
+            return graphie.svgjs.image(
                 this.props.picUrl,
                 scaledCenter[0] - size / 2,
                 scaledCenter[1] - size / 2,

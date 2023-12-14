@@ -195,7 +195,7 @@ class Graphie extends React.Component<Props> {
             // itself, or always wrap it in other components so that it is.
             // @ts-expect-error - TS2769 - No overload matches this call. | TS2554 - Expected 2 arguments, but got 1.
             $(graphieDiv).css({width: "100%", height: "100%"});
-            graphie.raphael.setSize("100%", "100%");
+            graphie.svgjs.size("100%", "100%");
         }
 
         this.props.setup(
