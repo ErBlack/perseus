@@ -60,7 +60,6 @@ const DEFAULT_STATE = {
 } as const;
 
 type State = {
-    constraints: any;
     // Event Handlers
     add: [];
     modify: [];
@@ -85,9 +84,10 @@ type State = {
 
     // State
     id: string;
+    constraints: Array<any>;
     cursor: null | "move" | "pointer";
     mouseTarget: any;
-    added: any;
+    added: boolean;
     isMouseOver: boolean;
     isDragging: boolean;
     isHovering: boolean;
@@ -148,47 +148,42 @@ class Movable {
     _applyConstraints(current, previous, extraOptions) {
         let skipRemaining = false;
 
-        return _.reduce(
-            this.state.constraints,
-            (memo, constraint) => {
-                // A move that has been cancelled won't be propagated to later
-                // constraints calls
-                if (memo === false) {
-                    return false;
-                }
+        return this.state.constraints.reduce((memo, constraint) => {
+            // A move that has been cancelled won't be propagated to later
+            // constraints calls
+            if (memo === false) {
+                return false;
+            }
 
-                if (skipRemaining) {
-                    return memo;
-                }
+            if (skipRemaining) {
+                return memo;
+            }
 
-                const result = constraint.call(this, memo, previous, {
-                    onSkipRemaining: () => {
-                        skipRemaining = true;
-                    },
-                    ...extraOptions,
-                });
+            const result = constraint.call(this, memo, previous, {
+                onSkipRemaining: () => {
+                    skipRemaining = true;
+                },
+                ...extraOptions,
+            });
 
-                if (result === false) {
-                    // Returning false cancels the move
-                    return false;
-                }
-                if (kpoint.is(result, 2)) {
-                    // Returning a coord from constraints overrides the move
-                    return result;
-                }
-                if (result === true || result == null) {
-                    // Returning true or undefined allow the move to occur
-                    return memo;
-                }
-                // Anything else is an error
-                throw new PerseusError(
-                    "Constraint returned invalid result: " + result,
-                    Errors.Internal,
-                );
-            },
-            current,
-            this,
-        );
+            if (result === false) {
+                // Returning false cancels the move
+                return false;
+            }
+            if (kpoint.is(result, 2)) {
+                // Returning a coord from constraints overrides the move
+                return result;
+            }
+            if (result === true || result == null) {
+                // Returning true or undefined allow the move to occur
+                return memo;
+            }
+            // Anything else is an error
+            throw new PerseusError(
+                "Constraint returned invalid result: " + result,
+                Errors.Internal,
+            );
+        }, current);
     }
 
     /**
@@ -429,10 +424,6 @@ class Movable {
     }
 }
 
-InteractiveUtil.createGettersFor(
-    Movable,
-    _.extend({}, DEFAULT_PROPS, DEFAULT_STATE),
-);
-// InteractiveUtil.addMovableHelperMethodsTo(Movable);
+InteractiveUtil.createGettersFor(Movable, {...DEFAULT_PROPS, ...DEFAULT_STATE});
 
 export default Movable;
