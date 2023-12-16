@@ -85,6 +85,7 @@ type State = {
 
     // State
     id: string;
+    cursor: null | "move" | "pointer";
     mouseTarget: any;
     added: any;
     isMouseOver: boolean;
@@ -243,21 +244,14 @@ class Movable {
             delete this._listenerMap[key];
 
             // Re-index existing events: if they occur after `index`, decrement
-            const keys = _.keys(this._listenerMap);
-            _.each(
-                keys,
-                function (key) {
-                    if (
-                        getEventName(key) === eventName &&
-                        // @ts-expect-error - TS2683 - 'this' implicitly has type 'any' because it does not have a type annotation.
-                        this._listenerMap[key] > index
-                    ) {
-                        // @ts-expect-error - TS2683 - 'this' implicitly has type 'any' because it does not have a type annotation.
-                        this._listenerMap[key]--;
-                    }
-                },
-                this,
-            );
+            Object.keys(this._listenerMap).forEach((key) => {
+                if (
+                    getEventName(key) === eventName &&
+                    this._listenerMap[key] > index
+                ) {
+                    this._listenerMap[key]--;
+                }
+            });
         }
     }
 
@@ -276,9 +270,8 @@ class Movable {
      */
     grab(coord) {
         assert(kpoint.is(coord));
-        const self = this;
-        const graphie = self.graphie;
-        const state = self.state;
+        const graphie = this.graphie;
+        const state = this.state;
 
         state.isHovering = true;
         state.isDragging = true;
@@ -286,28 +279,28 @@ class Movable {
 
         const startMouseCoord = coord;
         let prevMouseCoord = startMouseCoord;
-        self._fireEvent(state.onMoveStart, startMouseCoord, startMouseCoord);
+        this._fireEvent(state.onMoveStart, startMouseCoord, startMouseCoord);
 
-        const moveHandler = function (e: any) {
+        const moveHandler = (e: any) => {
             e.preventDefault();
 
             const mouseCoord = graphie.getMouseCoord(e);
-            self._fireEvent(state.onMove, mouseCoord, prevMouseCoord);
-            self.draw();
+            this._fireEvent(state.onMove, mouseCoord, prevMouseCoord);
+            this.draw();
             prevMouseCoord = mouseCoord;
         };
 
-        const upHandler = function (e: any) {
+        const upHandler = (e: any) => {
             $(document).unbind("vmousemove", moveHandler);
             $(document).unbind("vmouseup", upHandler);
             if (state.isHovering) {
-                self._fireEvent(state.onClick, prevMouseCoord, startMouseCoord);
+                this._fireEvent(state.onClick, prevMouseCoord, startMouseCoord);
             }
-            state.isHovering = self.state.isMouseOver;
+            state.isHovering = this.state.isMouseOver;
             state.isDragging = false;
             graphie.isDragging = false;
-            self._fireEvent(state.onMoveEnd, prevMouseCoord, startMouseCoord);
-            self.draw();
+            this._fireEvent(state.onMoveEnd, prevMouseCoord, startMouseCoord);
+            this.draw();
         };
 
         $(document).bind("vmousemove", moveHandler);
@@ -321,12 +314,11 @@ class Movable {
      * Analogous to React.js's setProps
      */
     update(options) {
-        const self = this;
-        const graphie = self.graphie;
+        const graphie = this.graphie;
 
-        const prevState = self.cloneState();
+        const prevState = this.cloneState();
         const state = _.extend(
-            self.state,
+            this.state,
             normalizeOptions(FUNCTION_ARRAY_OPTIONS, options),
         );
 
@@ -342,25 +334,25 @@ class Movable {
             const isMouse = !("ontouchstart" in window);
 
             if (isMouse) {
-                $mouseTarget.on("vmouseover", function () {
+                $mouseTarget.on("vmouseover", () => {
                     state.isMouseOver = true;
                     if (!graphie.isDragging) {
                         state.isHovering = true;
                     }
-                    if (self.state.added) {
+                    if (this.state.added) {
                         // Avoid drawing if the point has been removed
-                        self.draw();
+                        this.draw();
                     }
                 });
 
-                $mouseTarget.on("vmouseout", function () {
+                $mouseTarget.on("vmouseout", () => {
                     state.isMouseOver = false;
                     if (!state.isDragging) {
                         state.isHovering = false;
                     }
-                    if (self.state.added) {
+                    if (this.state.added) {
                         // Avoid drawing if the point has been removed
-                        self.draw();
+                        this.draw();
                     }
                 });
             }
@@ -369,20 +361,20 @@ class Movable {
             // movable object on a mobile device.
             $mouseTarget[0].addEventListener(
                 "touchstart",
-                function (event) {
+                (event) => {
                     event.preventDefault();
                 },
                 {passive: false},
             );
 
-            $mouseTarget.on("vmousedown", function (e) {
+            $mouseTarget.on("vmousedown", (e) => {
                 if (e.which !== 0 && e.which !== 1) {
                     return;
                 }
                 e.preventDefault();
 
                 const mouseCoord = graphie.getMouseCoord(e);
-                self.grab(mouseCoord);
+                this.grab(mouseCoord);
             });
         }
 
@@ -400,16 +392,16 @@ class Movable {
 
         // Trigger an add event if this hasn't been added before
         if (!state.added) {
-            self._fireEvent(state.modify, self.cloneState(), {});
+            this._fireEvent(state.modify, this.cloneState(), {});
             state.added = true;
 
             // Update the state for `added` and in case the add event
             // changed it
-            self.prevState = self.cloneState();
+            this.prevState = this.cloneState();
         }
 
         // Trigger a modify event
-        self._fireEvent(state.modify, self.cloneState(), self.prevState);
+        this._fireEvent(state.modify, this.cloneState(), this.prevState);
     }
 
     remove() {
