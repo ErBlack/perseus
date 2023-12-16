@@ -49,20 +49,25 @@ const DEFAULT_STATE = {
     mouseTarget: null,
 } as const;
 
-const Movable = function (graphie: any, options: any): void {
-    // @ts-expect-error - TS2683 - 'this' implicitly has type 'any' because it does not have a type annotation.
-    _.extend(this, {
-        graphie: graphie,
-        state: {
+class Movable {
+    graphie: any;
+    state: {
+        // Set here because this must be unique for each instance
+        id: string;
+    };
+
+    constructor(graphie: any, options: any) {
+        this.graphie = graphie;
+        this.state = {
             // Set here because this must be unique for each instance
             id: _.uniqueId("movable"),
-        },
-    });
+        };
 
-    // We only set DEFAULT_STATE once, here
-    // @ts-expect-error - TS2683 - 'this' implicitly has type 'any' because it does not have a type annotation.
-    this.modify(_.extend({}, DEFAULT_STATE, options));
-};
+        // We only set DEFAULT_STATE once, here
+        // @ts-expect-error - TS2683 - 'this' implicitly has type 'any' because it does not have a type annotation.
+        this.modify(_.extend({}, DEFAULT_STATE, options));
+    }
+}
 
 InteractiveUtil.createGettersFor(
     Movable,
