@@ -112,6 +112,36 @@ class Movable {
         this.modify({...DEFAULT_STATE, options});
     }
 
+    ////////////////////////////////
+    // Props
+    //
+    cursor() {
+        return this.state.cursor;
+    }
+
+    ////////////////////////////////
+    // State
+    //
+    added() {
+        return this.state.added;
+    }
+
+    isHovering() {
+        return this.state.isHovering;
+    }
+
+    isMouseOver() {
+        return this.state.isMouseOver;
+    }
+
+    isDragging() {
+        return this.state.isDragging;
+    }
+
+    mouseTarget() {
+        return this.state.mouseTarget;
+    }
+
     cloneState(): State {
         return {...this.state};
     }
@@ -423,7 +453,5 @@ class Movable {
         }
     }
 }
-
-InteractiveUtil.createGettersFor(Movable, {...DEFAULT_PROPS, ...DEFAULT_STATE});
 
 export default Movable;

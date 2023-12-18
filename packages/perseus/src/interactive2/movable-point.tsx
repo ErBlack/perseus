@@ -60,8 +60,10 @@ import reactRender from "../util/react-render";
 import Tex from "../util/tex";
 
 import InteractiveUtil from "./interactive-util";
+import Movable from "./movable";
 import MovablePointOptions from "./movable-point-options";
 import objective_ from "./objective_";
+import {Coord} from "./types";
 import WrappedEllipse from "./wrapped-ellipse";
 
 const assert = InteractiveUtil.assert;
@@ -99,41 +101,171 @@ const DEFAULT_STATE = {
 } as const;
 
 const tooltipResetFunctions: Array<() => void> = [];
+type Props = {
+    /** The initial position of the point */
+    coord?: Coord;
+    /** changes the size of the point. defaults to 4 */
+    pointSize?: number;
+    /** draw the point, but don't let it be interactable */
+    static?: null;
+    /** css cursor for this point */
+    cursor?: "move" | "pointer";
+    /** the raphael/graphie style of the point when not hovering */
+    normalStyle?: null;
+    /** the raphael/graphie style of the point when hovering, if MovablePoint.draw.highlight is used */
+    highlightStyle?: null;
+    shadow?: null;
+    tooltip?: null;
 
-const MovablePoint = function (graphie: any, movable: any, options: any) {
-    // @ts-expect-error - TS2683 - 'this' implicitly has type 'any' because it does not have a type annotation.
-    _.extend(this, {
-        graphie,
-        movable,
-        state: {
-            // Set here because this must be unique for each instance
-            id: _.uniqueId("movablePoint"),
-        },
-    });
-
-    // We only set DEFAULT_STATE once, here
-    // @ts-expect-error - TS2683 - 'this' implicitly has type 'any' because it does not have a type annotation.
-    this.modify(_.extend({}, DEFAULT_STATE, options));
+    /**
+     * called immediately when this movablePoint is added
+     * default: apply any constraints and draw */
+    add: Array<(state) => unknown>;
+    /** drawing functions. default to [basic, highlight] */
+    draw: Array<(prevState, currentState) => unknown>;
+    /** called when this movablePoint is removed */
+    remove: Array<(state) => unknown>;
+    /** called when this point is clicked on */
+    onMoveStart: Array<(coord) => unknown>;
+    /**
+     * called when this point is dragged
+     *   return true or nothing to accept the move
+     *   return false to cancel the move
+     *   return an [x, y] coordinate to override the move
+     */
+    constraints: Array<(coord) => undefined | boolean | Coord>;
+    /**
+     * called after all constraints functions pass and the point is moved to a
+     * new location */
+    onMove: Array<(coord) => unknown>;
+    /** called when the mouse is released from a click or move */
+    onMoveEnd: Array<(coord) => unknown>;
+    /** called when someone mouses down, doesn't move the point, and mouses up. */
+    onClick: Array<(coord) => unknown>;
 };
 
-_.extend(MovablePoint, MovablePointOptions);
-InteractiveUtil.createGettersFor(
-    MovablePoint,
-    _.extend({}, DEFAULT_PROPS, DEFAULT_STATE),
-);
-InteractiveUtil.addMovableHelperMethodsTo(MovablePoint);
+type State = Required<Props> & {
+    // State
+    id: string;
+    added: boolean;
+    hasMoved: boolean;
+    visibleShape: null | any;
+    outOfBounds: any;
+    mouseTarget: null;
+    touchOffset: number[];
+};
 
-_.extend(MovablePoint.prototype, {
-    cloneState: function () {
-        return _.extend(this.movable.cloneState(), this.state);
-    },
+class MovablePoint {
+    private graphie: any;
+    private movable: Movable;
+    private state: State;
+    private prevState?: State;
 
-    _createDefaultState: function () {
-        return _.extend(
-            {
-                id: this.state.id,
+    private _tooltip: HTMLDivElement | null = null;
+
+    constructor(graphie: any, movable: Movable, options: Props) {
+        this.graphie = graphie;
+        this.movable = movable;
+        // @ts-expect-error - TS2740 - modify() fills in the rest of the
+        // default state.
+        this.state = {
+            // Set here because this must be unique for each instance
+            id: _.uniqueId("movablePoint"),
+            add: {
+                constrain: function () {
+                    this.constrain();
+                },
             },
-            normalizeOptions(
+        };
+
+        // We only set DEFAULT_STATE once, here
+        this.modify({...DEFAULT_STATE, ...options});
+    }
+
+    //////////////////////////////////////
+    // Props
+    //
+
+    coord() {
+        return this.state.coord;
+    }
+
+    pointSize() {
+        return this.state.pointSize;
+    }
+
+    static() {
+        return this.state.static;
+    }
+
+    cursor() {
+        return this.state.cursor;
+    }
+
+    // Clone these for use with raphael, which modifies the input
+    // style parameters
+    normalStyle() {
+        return _.clone(this.state.normalStyle);
+    }
+
+    highlightStyle() {
+        return _.clone(this.state.highlightStyle);
+    }
+
+    shadow() {
+        return this.state.shadow;
+    }
+
+    tooltip() {
+        return this.state.tooltip;
+    }
+
+    //////////////////////////////////////
+    // State
+    //
+    added() {
+        return this.state.added;
+    }
+
+    hasMoved() {
+        return this.state.hasMoved;
+    }
+
+    visibleShape() {
+        return this.state.visibleShape;
+    }
+
+    outOfBounds() {
+        return this.state.outOfBounds;
+    }
+
+    touchOffset() {
+        return this.state.touchOffset;
+    }
+
+    cloneState() {
+        return {...this.movable.cloneState(), ...this.state};
+    }
+
+    /**
+     * Forwarding methods to this.movable:
+     */
+    isHovering() {
+        return this.movable.isHovering();
+    }
+
+    isDragging() {
+        return this.movable.isDragging();
+    }
+
+    mouseTarget() {
+        return this.movable.mouseTarget();
+    }
+
+    _createDefaultState() {
+        return {
+            id: this.state.id,
+            ...normalizeOptions(
                 FUNCTION_ARRAY_OPTIONS,
                 // Defaults are copied from MovablePointOptions.*.standard
                 // These defaults are set here instead of DEFAULT_PROPS/STATE
@@ -146,9 +278,9 @@ _.extend(MovablePoint.prototype, {
                 // We only update props here, because we want things on state to
                 // be persistent, and updated appropriately in modify()
             ),
-            DEFAULT_PROPS,
-        );
-    },
+            ...DEFAULT_PROPS,
+        };
+    }
 
     /**
      * Resets the object to its state as if it were constructed with
@@ -156,9 +288,9 @@ _.extend(MovablePoint.prototype, {
      *
      * Analogous to React.js's replaceProps
      */
-    modify: function (options) {
-        this.update(_.extend(this._createDefaultState(), options));
-    },
+    modify(options) {
+        this.update({...this._createDefaultState(), ...options});
+    }
 
     /**
      * Displays a tooltip above the point, replacing any previous contents. If
@@ -168,7 +300,7 @@ _.extend(MovablePoint.prototype, {
      * KaTeX. Otherwise, the content will be assumed to be a DOM node and will
      * be appended inside the tooltip.
      */
-    _showTooltip: function (contents) {
+    _showTooltip(contents) {
         if (!this._tooltip) {
             this._tooltip = document.createElement("div");
             this._tooltip.className = "tooltip-content";
@@ -189,23 +321,24 @@ _.extend(MovablePoint.prototype, {
         }
 
         this.state.visibleShape.wrapper.className = "tooltip visible";
-        this._tooltip.appendChild(document.createElement("span"));
+        const span = document.createElement("span");
+        this._tooltip.appendChild(span);
 
         if (typeof contents === "string") {
-            processMath(this._tooltip.firstChild, contents, false);
+            processMath(span, contents, false);
         } else if (typeof contents === "function") {
             contents(this._tooltip.firstChild);
         } else {
-            this._tooltip.firstChild.appendChild(contents);
+            span.appendChild(contents);
         }
-    },
+    }
 
-    _hideTooltip: function () {
+    _hideTooltip() {
         if (this._tooltip) {
             // Without the visible class, tooltips have display: none set
             this.state.visibleShape.wrapper.className = "tooltip";
         }
-    },
+    }
 
     /**
      * Adjusts constructor parameters without changing previous settings
@@ -213,7 +346,7 @@ _.extend(MovablePoint.prototype, {
      *
      * Analogous to React.js's setProps
      */
-    update: function (options) {
+    update(options) {
         const self = this;
         const graphie = self.graphie;
         const state = _.extend(
@@ -335,7 +468,7 @@ _.extend(MovablePoint.prototype, {
                             this._showTooltip(`${state.coord[0]}`);
                         } else {
                             this._showTooltip(
-                                `(${state.coord[0]}, ${state.coord[1]})`,
+                                `(${state.coord[0]} ${state.coord[1]})`,
                             );
                         }
 
@@ -417,7 +550,7 @@ _.extend(MovablePoint.prototype, {
 
                         content.style.filter = "none";
 
-                        this._tooltip.firstChild.addEventListener(
+                        this._tooltip?.children[0].addEventListener(
                             "touchstart",
                             (e) => {
                                 // Prevent creation of a new point when the event is
@@ -427,7 +560,7 @@ _.extend(MovablePoint.prototype, {
                             true,
                         );
 
-                        this._tooltip.firstChild.addEventListener(
+                        this._tooltip?.children[0].addEventListener(
                             "touchend",
                             (e) => {
                                 // Remove the point and prevent creation of a
@@ -456,7 +589,7 @@ _.extend(MovablePoint.prototype, {
         // Trigger an add event if this hasn't been added before
         if (!state.added) {
             self.prevState = {};
-            self._fireEvent(state.add, self.cloneState(), self.prevState);
+            self._fireEvent(state.add, self.cloneState());
             state.added = true;
 
             // Update the state for `added` and in case the add event
@@ -466,9 +599,9 @@ _.extend(MovablePoint.prototype, {
 
         // Trigger a modify event
         self._fireEvent(state.modify, self.cloneState(), self.prevState);
-    },
+    }
 
-    remove: function () {
+    remove() {
         this.state.added = false;
         this._fireEvent(this.state.remove);
         if (this.movable) {
@@ -477,32 +610,32 @@ _.extend(MovablePoint.prototype, {
         // TODO(jack): This should really be moved off of
         // movablePoint.state and only kept on movable.state
         this.state.mouseTarget = null;
-    },
+    }
 
-    constrain: function () {
+    constrain() {
         const result = this._applyConstraints(this.coord(), this.coord());
         if (kpoint.is(result)) {
             this.setCoord(result);
         }
         return result !== false;
-    },
+    }
 
-    setCoord: function (coord) {
+    setCoord(coord) {
         assert(kpoint.is(coord, 2));
         this.state.coord = _.clone(coord);
         this.draw();
-    },
+    }
 
-    setCoordConstrained: function (coord) {
+    setCoordConstrained(coord) {
         assert(kpoint.is(coord, 2));
         const result = this._applyConstraints(coord, this.coord());
         if (result !== false) {
             this.state.coord = _.clone(result);
             this.draw();
         }
-    },
+    }
 
-    moveTo: function (coord) {
+    moveTo(coord) {
         // The caller has the option of adding an onMove() method to the
         // movablePoint object we return as a sort of event handler
         // By returning false from onMove(), the move can be vetoed,
@@ -537,57 +670,39 @@ _.extend(MovablePoint.prototype, {
             this._fireEvent(state.onMove, state.coord, prevCoord);
             this.draw();
         }
-    },
-
-    // Clone these for use with raphael, which modifies the input
-    // style parameters
-    normalStyle: function () {
-        return _.clone(this.state.normalStyle);
-    },
-
-    highlightStyle: function () {
-        return _.clone(this.state.highlightStyle);
-    },
+    }
 
     // Change z-order to back
-    toBack: function () {
+    toBack() {
         this.movable.toBack();
         if (this.state.visibleShape) {
             this.state.visibleShape.toBack();
         }
-    },
+    }
 
     // Change z-order to front
-    toFront: function () {
+    toFront() {
         if (this.state.visibleShape) {
             this.state.visibleShape.toFront();
         }
         this.movable.toFront();
-    },
+    }
 
-    /**
-     * Forwarding methods to this.movable:
-     */
-    isHovering: function () {
-        return this.movable.isHovering();
-    },
-
-    isDragging: function () {
-        return this.movable.isDragging();
-    },
-
-    mouseTarget: function () {
-        return this.movable.mouseTarget();
-    },
-
-    grab: function (coord) {
+    grab(coord) {
         // Provide an explicit touchOffset override, so that we track the user's
         // finger when a point has been grabbed.
         this.state.touchOffset = [0, 0];
 
         this.movable.grab(coord);
         this.moveTo(coord);
-    },
-});
+    }
+}
+
+_.extend(MovablePoint, MovablePointOptions);
+InteractiveUtil.createGettersFor(
+    MovablePoint,
+    _.extend({}, DEFAULT_PROPS, DEFAULT_STATE),
+);
+InteractiveUtil.addMovableHelperMethodsTo(MovablePoint);
 
 export default MovablePoint;
