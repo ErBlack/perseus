@@ -11860,6 +11860,11 @@ jsx-ast-utils@^3.3.5:
     object.assign "^4.1.4"
     object.values "^1.1.6"
 
+jsxgraph@^1.6.2:
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/jsxgraph/-/jsxgraph-1.6.2.tgz#0711244b3426f3331a2d8429a52655051dd981d6"
+  integrity sha512-ufnzAjSOYojklySpTqq50lF5AJXqyyqxarFfSaO3GsrmgCBbtKSk9X9cJHIuPrAlVttjA6Iy0Cm5y8c+zO9CUw==
+
 katex@^0.11.1:
   version "0.11.1"
   resolved "https://registry.yarnpkg.com/katex/-/katex-0.11.1.tgz#df30ca40c565c9df01a466a00d53e079e84ffaa2"

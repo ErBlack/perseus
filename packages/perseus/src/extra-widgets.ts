@@ -7,6 +7,7 @@ import CSProgram from "./widgets/cs-program";
 import Definition from "./widgets/definition";
 import Dropdown from "./widgets/dropdown";
 import Explanation from "./widgets/explanation";
+import G2 from "./widgets/g2";
 import GradedGroup from "./widgets/graded-group";
 import GradedGroupSet from "./widgets/graded-group-set";
 import Grapher from "./widgets/grapher";
@@ -44,6 +45,7 @@ export default [
     Dropdown,
     Explanation,
     Definition,
+    G2,
     Grapher,
     GradedGroup,
     GradedGroupSet,
