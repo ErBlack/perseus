@@ -1,5 +1,48 @@
 # @khanacademy/perseus
 
+## 17.6.0
+
+### Minor Changes
+
+-   [#907](https://github.com/Khan/perseus/pull/907) [`83884550`](https://github.com/Khan/perseus/commit/83884550df8b394e9afa6e95947c987614e2d242) Thanks [@nishasy](https://github.com/nishasy)! - Display names have been updated to better match type names
+
+## 17.5.0
+
+### Minor Changes
+
+-   [#909](https://github.com/Khan/perseus/pull/909) [`6c841f55`](https://github.com/Khan/perseus/commit/6c841f55027c87bfc8339816dac582f175a84193) Thanks [@SonicScrewdriver](https://github.com/SonicScrewdriver)! - Reworked onFocusChange logic to solve a bug on initial render.
+
+### Patch Changes
+
+-   [#908](https://github.com/Khan/perseus/pull/908) [`29563723`](https://github.com/Khan/perseus/commit/29563723cf229a9169d0c78a0174a8dbc8029861) Thanks [@benchristel](https://github.com/benchristel)! - Lighten the background color for odd-numbered rows of Markdown tables on
+    desktop-sized screens. Previously, the color was `#ededed`; it is now
+    `#f7f8fa` (Wonder Blocks offWhite).
+
+    This change ensures that color-coded math expressions will have accessible
+    contrast with the background.
+
+## 17.4.0
+
+### Minor Changes
+
+-   [#902](https://github.com/Khan/perseus/pull/902) [`c9db8185`](https://github.com/Khan/perseus/commit/c9db818510e2e0fd142c23298890dcad89a7549a) Thanks [@SonicScrewdriver](https://github.com/SonicScrewdriver)! - Updated OnFocusChange method to return the keypadHeight rather than the DOMNode
+
+### Patch Changes
+
+-   [#887](https://github.com/Khan/perseus/pull/887) [`d09fdb98`](https://github.com/Khan/perseus/commit/d09fdb98963f23dbeb2009518513db671e0f09bb) Thanks [@jeremywiebe](https://github.com/jeremywiebe)! - Export `PerseusItem` type which represents an exercise question
+
+## 17.3.3
+
+### Patch Changes
+
+-   [#876](https://github.com/Khan/perseus/pull/876) [`fdc00c90`](https://github.com/Khan/perseus/commit/fdc00c90a19d3e241b3a5cdc2b1df5d761b24af3) Thanks [@jeremywiebe](https://github.com/jeremywiebe)! - Adjust CSS to ensure all `code` and `pre` blocks rendered by Perseus have a monospace font and common styling
+
+## 17.3.2
+
+### Patch Changes
+
+-   [#850](https://github.com/Khan/perseus/pull/850) [`f4cd2a76`](https://github.com/Khan/perseus/commit/f4cd2a7639556312af75b9ba9c6a97c41c94beac) Thanks [@jeremywiebe](https://github.com/jeremywiebe)! - Widget rendering errors are now reported as distinct errors to the Perseus logging infrastructure.
+
 ## 17.3.1
 
 ### Patch Changes
