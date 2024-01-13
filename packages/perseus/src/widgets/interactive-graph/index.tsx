@@ -6,13 +6,13 @@ import debounce from "lodash.debounce";
 import * as React from "react";
 import _ from "underscore";
 
-import Graph from "../components/graph";
-import Interactive2 from "../interactive2";
-import WrappedLine from "../interactive2/wrapped-line";
-import {Errors} from "../logging/log";
-import {PerseusError} from "../perseus-error";
-import Util from "../util";
-import KhanColors from "../util/colors";
+import Graph from "../../components/graph";
+import Interactive2 from "../../interactive2";
+import WrappedLine from "../../interactive2/wrapped-line";
+import {Errors} from "../../logging/log";
+import {PerseusError} from "../../perseus-error";
+import Util from "../../util";
+import KhanColors from "../../util/colors";
 import {
     angleMeasures,
     ccw,
@@ -27,11 +27,11 @@ import {
     getLineIntersection,
     canonicalSineCoefficients,
     similar,
-} from "../util/geometry";
-import GraphUtils from "../util/graph-utils";
-import {getInteractiveBoxFromSizeClass} from "../util/sizing-utils";
+} from "../../util/geometry";
+import GraphUtils from "../../util/graph-utils";
+import {getInteractiveBoxFromSizeClass} from "../../util/sizing-utils";
 
-import type {Coord} from "../interactive2/types";
+import type {Coord} from "../../interactive2/types";
 import type {
     PerseusGraphType,
     PerseusGraphTypeAngle,
@@ -39,13 +39,13 @@ import type {
     PerseusGraphTypePolygon,
     PerseusGraphTypeSegment,
     PerseusInteractiveGraphWidgetOptions,
-} from "../perseus-types";
-import type {PerseusScore, WidgetExports, WidgetProps} from "../types";
+} from "../../perseus-types";
+import type {PerseusScore, WidgetExports, WidgetProps} from "../../types";
 import type {
     QuadraticCoefficient,
     SineCoefficient,
     Range,
-} from "../util/geometry";
+} from "../../util/geometry";
 
 const {DeprecationMixin} = Util;
 
