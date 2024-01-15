@@ -1,4 +1,4 @@
-import InteractiveGraph from "./widget";
+import InteractiveGraph from "./mafs-widget";
 
 import type {WidgetExports} from "../../types";
 

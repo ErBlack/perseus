@@ -36,6 +36,7 @@ import {
     getSinusoidCoefficients,
 } from "./coefficients";
 
+import type {DefaultProps, Props} from "./types";
 import type {Coord} from "../../interactive2/types";
 import type {
     PerseusGraphType,
@@ -43,9 +44,8 @@ import type {
     PerseusGraphTypePoint,
     PerseusGraphTypePolygon,
     PerseusGraphTypeSegment,
-    PerseusInteractiveGraphWidgetOptions,
 } from "../../perseus-types";
-import type {PerseusScore, WidgetProps} from "../../types";
+import type {PerseusScore} from "../../types";
 import type {
     QuadraticCoefficient,
     SineCoefficient,
@@ -121,23 +121,7 @@ const makeInvalidTypeError = (
     );
 };
 
-type RenderProps = PerseusInteractiveGraphWidgetOptions; // There's no transform function in exports
-type Rubric = PerseusInteractiveGraphWidgetOptions;
-type Props = WidgetProps<RenderProps, Rubric>;
 type State = any;
-type DefaultProps = {
-    labels: Props["labels"];
-    range: Props["range"];
-    step: Props["step"];
-    backgroundImage: Props["backgroundImage"];
-    markings: Props["markings"];
-    showTooltips: Props["showTooltips"];
-    showProtractor: Props["showProtractor"];
-    showRuler: Props["showRuler"];
-    rulerLabel: Props["rulerLabel"];
-    rulerTicks: Props["rulerTicks"];
-    graph: Props["graph"];
-};
 
 class InteractiveGraph extends React.Component<Props, State> {
     angle: any | null | undefined;
@@ -462,7 +446,7 @@ class InteractiveGraph extends React.Component<Props, State> {
         return this.props.isMobile ? {"stroke-width": 3} : {};
     };
 
-    addLine: (arg1: string) => void = (type) => {
+    addLine: (lineType: "line" | "ray") => void = (lineType) => {
         const self = this;
         const graphie = self.graphie;
         const coords = InteractiveGraph.getLineCoords(
@@ -499,10 +483,10 @@ class InteractiveGraph extends React.Component<Props, State> {
             },
         } as const;
 
-        if (type === "line") {
+        if (lineType === "line") {
             // @ts-expect-error - TS2339 - Property 'extendLine' does not exist on type '{ readonly points: any[]; readonly static: true; readonly normalStyle: { readonly "stroke-width"?: number | undefined; readonly stroke: "#71B307" | "#63D9EA"; }; }'.
             lineConfig.extendLine = true;
-        } else if (type === "ray") {
+        } else if (lineType === "ray") {
             // @ts-expect-error - TS2339 - Property 'extendRay' does not exist on type '{ readonly points: any[]; readonly static: true; readonly normalStyle: { readonly "stroke-width"?: number | undefined; readonly stroke: "#71B307" | "#63D9EA"; }; }'.
             lineConfig.extendRay = true;
         }
@@ -2002,11 +1986,11 @@ class InteractiveGraph extends React.Component<Props, State> {
 
     /**
      * @param {object} graph Like props.graph or props.correct
-     * @param {object} props of an InteractiveGraph instance
+     * @param {object} graphConfig of an InteractiveGraph instance
      */
     static getAngleCoords(
         graph: PerseusGraphTypeAngle,
-        props: Props,
+        graphConfig: {range: Props["range"]; step: Props["step"]},
     ): ReadonlyArray<Coord> {
         let coords = graph.coords;
         if (coords) {
@@ -2021,7 +2005,7 @@ class InteractiveGraph extends React.Component<Props, State> {
         angle = (angle * Math.PI) / 180;
         const offset = ((graph.angleOffsetDeg || 0) * Math.PI) / 180;
 
-        coords = InteractiveGraph.pointsFromNormalized(props, [
+        coords = InteractiveGraph.pointsFromNormalized(graphConfig, [
             [0.85, 0.5],
             [0.5, 0.5],
         ]);
@@ -2066,7 +2050,7 @@ class InteractiveGraph extends React.Component<Props, State> {
     }
 
     static pointsFromNormalized(
-        props: Props,
+        props: {range: Props["range"]; step: Props["step"]},
         coordsList: ReadonlyArray<Coord>,
         noSnap?: boolean,
     ): ReadonlyArray<Coord> {
