@@ -1,0 +1,99 @@
+{
+    "$schema": "https://biomejs.dev/schemas/1.5.3/schema.json",
+    "files": {
+        "ignore": [
+            "jquery.mobile.vmouse.js",
+            "__genfiles__/",
+            "coverage/",
+            "dist/",
+            "docs/",
+            "storybook-static/",
+            "vendor/"
+        ]
+    },
+    "vcs": {
+        "enabled": true,
+        "clientKind": "git",
+        "useIgnoreFile": true
+    },
+    "formatter": {
+        "indentWidth": 4,
+        "indentStyle": "space"
+    },
+    "organizeImports": {
+        "enabled": false
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": true,
+            "a11y": {
+                "noSvgWithoutTitle": "off",
+                "useButtonType": "off",
+                "useIframeTitle": "off",
+                "useValidAnchor": "off",
+                "noRedundantAlt": "off",
+                "useKeyWithMouseEvents": "off",
+                "useAltText": "off",
+                "useKeyWithClickEvents": "off"
+            },
+            "complexity": {
+                "useArrowFunction": "off",
+                "useOptionalChain": "off",
+                "noForEach": "off"
+            },
+            "correctness": {
+                "noSwitchDeclarations": "off",
+                "noVoidTypeReturn": "off",
+                "noChildrenProp": "off",
+                "noInnerDeclarations": "off",
+                "noRenderReturnValue": "off",
+                "useExhaustiveDependencies": "off"
+            },
+            "performance": {
+                "noAccumulatingSpread": "off"
+            },
+            "suspicious": {
+                "noAssignInExpressions": "off",
+                "noExplicitAny": "off",
+                "noRedeclare": "off",
+                "noImplicitAnyLet": "off",
+                "noArrayIndexKey": "off",
+                "noShadowRestrictedNames": "off",
+                "noConfusingVoidType": "off",
+                "noSelfCompare": "off",
+                "noPrototypeBuiltins": "off"
+            },
+            "style": {
+                "noParameterAssign": "off",
+                "noUselessElse": "off",
+                "noUnusedTemplateLiteral": "off",
+                "noArguments": "off",
+                "noVar": "off",
+                "noNonNullAssertion": "off",
+                "useExponentiationOperator": "off",
+                "useTemplate": "off"
+            }
+        }
+    },
+    "javascript": {
+        "formatter": {
+            "bracketSpacing": false,
+            "trailingComma": "all"
+        }
+    },
+    "overrides": [
+        {
+            "include": [
+                "tsconfig.json",
+                "tsconfig-*.json"
+            ],
+            "json": {
+                "parser": {
+                    "allowComments": true,
+                    "allowTrailingCommas": true
+                }
+            }
+        }
+    ]
+}
