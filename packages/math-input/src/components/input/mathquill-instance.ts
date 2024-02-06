@@ -1,5 +1,6 @@
-import * as i18n from "@khanacademy/wonder-blocks-i18n";
 import MathQuill from "mathquill";
+
+import {mathQuillStrings} from "./strings";
 
 import type {
     MathQuillInterface,
@@ -99,8 +100,10 @@ export function createMathField(
 
     const mathField = mathQuillInstance
         .MathField(container, config)
-        // translated in ./math-input.tsx
-        .setAriaLabel(i18n._("Math input box")) as MathFieldInterface;
+        .setAriaLabel(mathQuillStrings.mathInputBox)
+        .setAriaStringsOverrideMap(
+            mathQuillStrings.ariaStaticStringsMap,
+        ) as MathFieldInterface;
 
     return mathField;
 }

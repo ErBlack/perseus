@@ -30,3 +30,5 @@ export type MathFieldUpdaterCallback = (
     mathField: MathFieldInterface,
     key: Key,
 ) => void;
+
+export type MathQuillAriaStatisStringsMap = MathQuill.v3.AriaStaticStringsMap;
