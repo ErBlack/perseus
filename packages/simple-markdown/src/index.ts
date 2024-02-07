@@ -1000,9 +1000,9 @@ var defaultRules: DefaultRules = {
     },
     codeBlock: {
         order: currOrder++,
-        match: blockRegex(/^(?:    [^\n]+\n*)+(?:\n *)+\n/),
+        match: blockRegex(/^(?: {4}[^\n]+\n*)+(?:\n *)+\n/),
         parse: function (capture, parse, state) {
-            var content = capture[0].replace(/^    /gm, "").replace(/\n+$/, "");
+            var content = capture[0].replace(/^ {4}/gm, "").replace(/\n+$/, "");
             return {
                 lang: undefined,
                 content: content,

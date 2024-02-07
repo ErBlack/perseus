@@ -350,7 +350,7 @@ describe("server item renderer", () => {
             keypadElementDOMNode.getBoundingClientRect = () =>
                 ({
                     height: 250,
-                } as DOMRect);
+                }) as DOMRect;
 
             const keypadElement: KeypadAPI = {
                 getDOMNode: jest
@@ -419,7 +419,7 @@ describe("server item renderer", () => {
             keypadElementDOMNode.getBoundingClientRect = () =>
                 ({
                     height: 250,
-                } as DOMRect);
+                }) as DOMRect;
 
             const keypadElement: KeypadAPI = {
                 getDOMNode: jest

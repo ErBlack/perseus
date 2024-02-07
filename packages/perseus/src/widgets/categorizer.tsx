@@ -61,8 +61,6 @@ export class Categorizer extends React.Component<Props, State> {
     };
 
     render(): React.ReactNode {
-        const self = this;
-
         // In this context, isMobile is used to differentiate mobile from
         // desktop.
         const isMobile = this.props.apiOptions.isMobile;
@@ -98,7 +96,7 @@ export class Categorizer extends React.Component<Props, State> {
                     {indexedItems.map((indexedItem) => {
                         const item = indexedItem[0];
                         const itemNum = indexedItem[1];
-                        const uniqueId = self.state.uniqueId + "_" + itemNum;
+                        const uniqueId = this.state.uniqueId + "_" + itemNum;
                         return (
                             <tr key={itemNum}>
                                 <td>
@@ -108,10 +106,10 @@ export class Categorizer extends React.Component<Props, State> {
                                         linterContext={this.props.linterContext}
                                     />
                                 </td>
-                                {self.props.categories.map(
+                                {this.props.categories.map(
                                     (catName, catNum) => {
                                         const selected =
-                                            self.props.values[itemNum] ===
+                                            this.props.values[itemNum] ===
                                             catNum;
                                         return (
                                             <td

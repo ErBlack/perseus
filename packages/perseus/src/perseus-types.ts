@@ -82,7 +82,7 @@ export const ItemExtras = [
     // The user might benefit from using a statistics Z Table like https://www.ztable.net/
     "zTable",
 ] as const;
-export type PerseusAnswerArea = Record<typeof ItemExtras[number], boolean>;
+export type PerseusAnswerArea = Record<(typeof ItemExtras)[number], boolean>;
 
 type Widget<Type extends string, Options> = {
     // The "type" of widget which will define what the Options field looks like
@@ -107,85 +107,157 @@ type Widget<Type extends string, Options> = {
 };
 
 // prettier-ignore
-export type CategorizerWidget = Widget<'categorizer', PerseusCategorizerWidgetOptions>;
+export type CategorizerWidget = Widget<
+    "categorizer",
+    PerseusCategorizerWidgetOptions
+>;
 // prettier-ignore
-export type CSProgramWidget = Widget<'cs-program', PerseusCSProgramWidgetOptions>;
+export type CSProgramWidget = Widget<
+    "cs-program",
+    PerseusCSProgramWidgetOptions
+>;
 // prettier-ignore
-export type DefinitionWidget = Widget<'definition', PerseusDefinitionWidgetOptions>;
+export type DefinitionWidget = Widget<
+    "definition",
+    PerseusDefinitionWidgetOptions
+>;
 // prettier-ignore
-export type DropdownWidget = Widget<'dropdown', PerseusDropdownWidgetOptions>;
+export type DropdownWidget = Widget<"dropdown", PerseusDropdownWidgetOptions>;
 // prettier-ignore
-export type ExplanationWidget = Widget<'explanation', PerseusExplanationWidgetOptions>;
+export type ExplanationWidget = Widget<
+    "explanation",
+    PerseusExplanationWidgetOptions
+>;
 // prettier-ignore
-export type ExpressionWidget = Widget<'expression', PerseusExpressionWidgetOptions>;
+export type ExpressionWidget = Widget<
+    "expression",
+    PerseusExpressionWidgetOptions
+>;
 // prettier-ignore
-export type GradedGroupSetWidget = Widget<'graded-group-set', PerseusGradedGroupSetWidgetOptions>;
+export type GradedGroupSetWidget = Widget<
+    "graded-group-set",
+    PerseusGradedGroupSetWidgetOptions
+>;
 // prettier-ignore
-export type GradedGroupWidget = Widget<'graded-group', PerseusGradedGroupWidgetOptions>;
+export type GradedGroupWidget = Widget<
+    "graded-group",
+    PerseusGradedGroupWidgetOptions
+>;
 // prettier-ignore
-export type GrapherWidget = Widget<'grapher', PerseusGrapherWidgetOptions>;
+export type GrapherWidget = Widget<"grapher", PerseusGrapherWidgetOptions>;
 // prettier-ignore
-export type GroupWidget = Widget<'group', PerseusGroupWidgetOptions>;
+export type GroupWidget = Widget<"group", PerseusGroupWidgetOptions>;
 // prettier-ignore
-export type IFrameWidget = Widget<'iframe', PerseusIFrameWidgetOptions>;
+export type IFrameWidget = Widget<"iframe", PerseusIFrameWidgetOptions>;
 // prettier-ignore
-export type ImageWidget = Widget<'image', PerseusImageWidgetOptions>;
+export type ImageWidget = Widget<"image", PerseusImageWidgetOptions>;
 // prettier-ignore
-export type InteractionWidget = Widget<'interaction', PerseusInteractionWidgetOptions>;
+export type InteractionWidget = Widget<
+    "interaction",
+    PerseusInteractionWidgetOptions
+>;
 // prettier-ignore
-export type InteractiveGraphWidget = Widget<'interactive-graph', PerseusInteractiveGraphWidgetOptions>;
+export type InteractiveGraphWidget = Widget<
+    "interactive-graph",
+    PerseusInteractiveGraphWidgetOptions
+>;
 // prettier-ignore
-export type LabelImageWidget = Widget<'label-image', PerseusLabelImageWidgetOptions>;
+export type LabelImageWidget = Widget<
+    "label-image",
+    PerseusLabelImageWidgetOptions
+>;
 // prettier-ignore
-export type MatcherWidget = Widget<'matcher', PerseusMatcherWidgetOptions>;
+export type MatcherWidget = Widget<"matcher", PerseusMatcherWidgetOptions>;
 // prettier-ignore
-export type MatrixWidget = Widget<'matrix', PerseusMatrixWidgetOptions>;
+export type MatrixWidget = Widget<"matrix", PerseusMatrixWidgetOptions>;
 // prettier-ignore
-export type MeasurerWidget = Widget<'measurer', PerseusMeasurerWidgetOptions>;
+export type MeasurerWidget = Widget<"measurer", PerseusMeasurerWidgetOptions>;
 // prettier-ignore
-export type NumberLineWidget = Widget<'number-line', PerseusNumberLineWidgetOptions>;
+export type NumberLineWidget = Widget<
+    "number-line",
+    PerseusNumberLineWidgetOptions
+>;
 // prettier-ignore
-export type NumericInputWidget = Widget<'numeric-input', PerseusNumericInputWidgetOptions>;
+export type NumericInputWidget = Widget<
+    "numeric-input",
+    PerseusNumericInputWidgetOptions
+>;
 // prettier-ignore
-export type OrdererWidget = Widget<'orderer', PerseusOrdererWidgetOptions>;
+export type OrdererWidget = Widget<"orderer", PerseusOrdererWidgetOptions>;
 // prettier-ignore
-export type PassageRefWidget = Widget<'passage-ref', PerseusPassageRefWidgetOptions>;
+export type PassageRefWidget = Widget<
+    "passage-ref",
+    PerseusPassageRefWidgetOptions
+>;
 // prettier-ignore
-export type PassageWidget = Widget<'passage', PerseusPassageWidgetOptions>;
+export type PassageWidget = Widget<"passage", PerseusPassageWidgetOptions>;
 // prettier-ignore
-export type PlotterWidget = Widget<'plotter', PerseusPlotterWidgetOptions>;
+export type PlotterWidget = Widget<"plotter", PerseusPlotterWidgetOptions>;
 // prettier-ignore
-export type RadioWidget = Widget<'radio', PerseusRadioWidgetOptions>;
+export type RadioWidget = Widget<"radio", PerseusRadioWidgetOptions>;
 // prettier-ignore
-export type SequenceWidget = Widget<'sequence', PerseusSequenceWidgetOptions>;
+export type SequenceWidget = Widget<"sequence", PerseusSequenceWidgetOptions>;
 // prettier-ignore
-export type SimulatorWidget = Widget<'simulator', PerseusSimulatorWidgetOptions>;
+export type SimulatorWidget = Widget<
+    "simulator",
+    PerseusSimulatorWidgetOptions
+>;
 // prettier-ignore
-export type SorterWidget = Widget<'sorter', PerseusSorterWidgetOptions>;
+export type SorterWidget = Widget<"sorter", PerseusSorterWidgetOptions>;
 // prettier-ignore
-export type TableWidget = Widget<'table', PerseusTableWidgetOptions>;
+export type TableWidget = Widget<"table", PerseusTableWidgetOptions>;
 // prettier-ignore
-export type ExampleGraphieWidget = Widget<'example-graphie-widget', PerseusExampleGraphieWidgetOptions>;
+export type ExampleGraphieWidget = Widget<
+    "example-graphie-widget",
+    PerseusExampleGraphieWidgetOptions
+>;
 // prettier-ignore
-export type ExampleWidget = Widget<'example-widget', PerseusExampleWidgetOptions>;
+export type ExampleWidget = Widget<
+    "example-widget",
+    PerseusExampleWidgetOptions
+>;
 // prettier-ignore
-export type InputNumberWidget = Widget<'input-number', PerseusInputNumberWidgetOptions>;
+export type InputNumberWidget = Widget<
+    "input-number",
+    PerseusInputNumberWidgetOptions
+>;
 // prettier-ignore
-export type LightsPuzzleWidget = Widget<'lights-puzzle', PerseusLightsPuzzleWidgetOptions>;
+export type LightsPuzzleWidget = Widget<
+    "lights-puzzle",
+    PerseusLightsPuzzleWidgetOptions
+>;
 // prettier-ignore
-export type MoleculeRendererWidget = Widget<'molecule-renderer', PerseusMoleculeRendererWidgetOptions>;
+export type MoleculeRendererWidget = Widget<
+    "molecule-renderer",
+    PerseusMoleculeRendererWidgetOptions
+>;
 // prettier-ignore
-export type RefTargetWidget = Widget<'passage-ref-target', PerseusPassageRefTargetWidgetOptions>;
+export type RefTargetWidget = Widget<
+    "passage-ref-target",
+    PerseusPassageRefTargetWidgetOptions
+>;
 // prettier-ignore
-export type ReactionDiagramWidget = Widget<'reaction-diagtram', PerseusReactionDiagramWidgetOptions>;
+export type ReactionDiagramWidget = Widget<
+    "reaction-diagtram",
+    PerseusReactionDiagramWidgetOptions
+>;
 // prettier-ignore
-export type SimpleMarkdownTesterWidget = Widget<'simple-markdown-tester', PerseusSimpleMarkdownTesterWidgetOptions>;
+export type SimpleMarkdownTesterWidget = Widget<
+    "simple-markdown-tester",
+    PerseusSimpleMarkdownTesterWidgetOptions
+>;
 // prettier-ignore
-export type UnitInputWidget = Widget<'unit-input', PerseusUnitInputWidgetOptions>;
+export type UnitInputWidget = Widget<
+    "unit-input",
+    PerseusUnitInputWidgetOptions
+>;
 // prettier-ignore
-export type VideoWidget = Widget<'video', PerseusVideoWidgetOptions>;
+export type VideoWidget = Widget<"video", PerseusVideoWidgetOptions>;
 //prettier-ignore
-export type AutoCorrectWidget = Widget<'deprecated-standin', PerseusWidgetOptions>;
+export type AutoCorrectWidget = Widget<
+    "deprecated-standin",
+    PerseusWidgetOptions
+>;
 
 export type PerseusWidget =
     | CategorizerWidget
@@ -359,7 +431,7 @@ export type PerseusExpressionAnswerForm = {
     // The answer expression must be fully expanded and simplified
     simplify: boolean;
     // Whether the form is considered "correct", "wrong", or "ungraded"
-    considered: typeof PerseusExpressionAnswerFormConsidered[number];
+    considered: (typeof PerseusExpressionAnswerFormConsidered)[number];
     // A key to identify the answer form in a list
     // NOTE: perseus-format.js says this is required even though it isn't necessary.
     key?: string;
@@ -868,7 +940,7 @@ export const plotterPlotTypes = [
     "histogram",
     "dotplot",
 ] as const;
-export type PlotType = typeof plotterPlotTypes[number];
+export type PlotType = (typeof plotterPlotTypes)[number];
 
 export type PerseusPlotterWidgetOptions = {
     // Translatable Text; The Axis labels. e.g. ["X Label", "Y Label"]

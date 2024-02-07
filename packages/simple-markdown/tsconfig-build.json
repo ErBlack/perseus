@@ -1,10 +1,10 @@
 {
-  "extends": "../tsconfig-shared.json",
-  "compilerOptions": {
+    "extends": "../tsconfig-shared.json",
+    "compilerOptions": {
       "outDir": "./dist",
       "rootDir": "src",
   },
-  "references": [
+    "references": [
     {"path": "../perseus-core/tsconfig-build.json"},
   ]
 }

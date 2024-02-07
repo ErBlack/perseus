@@ -380,7 +380,6 @@ export class Graphie {
         // draw tick marks
         if (ticks) {
             const halfWidthTicks = options.isMobile;
-            const thisGraphie = this;
             this.style(
                 {
                     stroke: options.isMobile ? KhanColors.GRAY_G : "#000000",
@@ -401,7 +400,7 @@ export class Graphie {
                             x += step
                         ) {
                             if (x < stop || !axisArrows) {
-                                thisGraphie.line(
+                                this.line(
                                     [x, -len + axisCenter[1]],
                                     [
                                         x,
@@ -419,7 +418,7 @@ export class Graphie {
                             x -= step
                         ) {
                             if (x > start || !axisArrows) {
-                                thisGraphie.line(
+                                this.line(
                                     [x, -len + axisCenter[1]],
                                     [
                                         x,

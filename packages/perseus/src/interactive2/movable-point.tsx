@@ -209,9 +209,8 @@ _.extend(MovablePoint.prototype, {
      * Analogous to React.js's setProps
      */
     update: function (options) {
-        const self = this;
-        const graphie = self.graphie;
-        const state = _.extend(self.state, normalizeOptions(options));
+        const graphie = this.graphie;
+        const state = _.extend(this.state, normalizeOptions(options));
 
         assert(kpoint.is(state.coord));
 
@@ -244,7 +243,7 @@ _.extend(MovablePoint.prototype, {
         if (!state.static) {
             // the invisible shape in front of the point that gets mouse events
             if (!state.mouseTarget) {
-                const center = self.state.coord;
+                const center = this.state.coord;
                 const radii = graphie.unscaleVector(24);
                 const options = {
                     mouselayer: true,
@@ -287,11 +286,11 @@ _.extend(MovablePoint.prototype, {
         // The Movable representing this movablePoint's representation
         // This handles mouse events for us, which we propagate in
         // onMove
-        self.movable.modify(
+        this.movable.modify(
             _.extend({}, state, {
                 add: null,
                 modify: null,
-                draw: self.draw.bind(self),
+                draw: this.draw.bind(this),
                 remove: null,
                 onMoveStart: (startMouseCoord) => {
                     state.hasMoved = false;
@@ -343,8 +342,8 @@ _.extend(MovablePoint.prototype, {
                         }
                     }
 
-                    self._fireEvent(state.onMoveStart, startCoord, startCoord);
-                    self.draw();
+                    this._fireEvent(state.onMoveStart, startCoord, startCoord);
+                    this.draw();
                 },
                 onMove: (mouseCoord, prevMouseCoord) => {
                     const transformedCoord = kvector.add(
@@ -352,7 +351,7 @@ _.extend(MovablePoint.prototype, {
                         state.touchOffset,
                     );
 
-                    self.moveTo(transformedCoord);
+                    this.moveTo(transformedCoord);
 
                     if (state.showHairlines) {
                         if (!this.state.outOfBounds) {
@@ -379,8 +378,8 @@ _.extend(MovablePoint.prototype, {
                     }
                 },
                 onMoveEnd: () => {
-                    if (self.isHovering() && !state.hasMoved) {
-                        self._fireEvent(state.onClick, state.coord, startCoord);
+                    if (this.isHovering() && !state.hasMoved) {
+                        this._fireEvent(state.onClick, state.coord, startCoord);
                     }
 
                     const svgElem = state.visibleShape.wrapper;
@@ -437,27 +436,27 @@ _.extend(MovablePoint.prototype, {
                         state.onRemove();
                     }
 
-                    self._fireEvent(state.onMoveEnd, state.coord, startCoord);
+                    this._fireEvent(state.onMoveEnd, state.coord, startCoord);
                     state.hasMoved = false;
                     state.touchOffset = null;
-                    self.draw();
+                    this.draw();
                 },
             }),
         );
 
         // Trigger an add event if this hasn't been added before
         if (!state.added) {
-            self.prevState = {};
-            self._fireEvent(state.add, self.cloneState(), self.prevState);
+            this.prevState = {};
+            this._fireEvent(state.add, this.cloneState(), this.prevState);
             state.added = true;
 
             // Update the state for `added` and in case the add event
             // changed it
-            self.prevState = self.cloneState();
+            this.prevState = this.cloneState();
         }
 
         // Trigger a modify event
-        self._fireEvent(state.modify, self.cloneState(), self.prevState);
+        this._fireEvent(state.modify, this.cloneState(), this.prevState);
     },
 
     remove: function () {

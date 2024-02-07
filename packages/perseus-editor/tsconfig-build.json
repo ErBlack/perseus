@@ -8,9 +8,7 @@
             "hubble": ["../../vendor/hubble/hubble.js"],
             // NOTE(kevinb): We have to repeat this here because TS doesn't do
             // intelligent merge of tsconfig.json files when using `extends`.
-            "@khanacademy/*": [
-                "../*/src"
-            ]
+            "@khanacademy/*": ["../*/src"]
         }
     },
     "references": [

@@ -108,7 +108,7 @@ var mhchemParser = {
             //
             const machine = mhchemParser.stateMachines[stateMachine];
             const t = machine.transitions[state] || machine.transitions["*"];
-            iterateTransitions: for (let i = 0; i < t.length; i++) {
+            for (let i = 0; i < t.length; i++) {
                 const matches = mhchemParser.patterns.match_(
                     t[i].pattern,
                     input,
@@ -162,7 +162,7 @@ var mhchemParser = {
                             input = matches.remainder;
                         }
                         if (!task.toContinue) {
-                            break iterateTransitions;
+                            break;
                         }
                     } else {
                         return output;

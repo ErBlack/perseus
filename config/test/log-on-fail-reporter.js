@@ -24,12 +24,12 @@ class LogOnFailedTestReporter extends DefaultReporter {
         if (testFailed && consoleBuffer && consoleBuffer.length) {
             // prettier-ignore
             this.log(
-         `  ${TITLE_BULLET}Console\n\n${getConsoleOutput(
-           consoleBuffer,
-           config,
-           this._globalConfig,
-         )}`
-       );
+                `  ${TITLE_BULLET}Console\n\n${getConsoleOutput(
+                    consoleBuffer,
+                    config,
+                    this._globalConfig,
+                )}`,
+            );
         }
     }
 }

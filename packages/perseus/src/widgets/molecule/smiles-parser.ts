@@ -2,12 +2,12 @@
 // can parse.  In addition to serving as a sort of validation, this also keeps
 // out unimplemented features (like cycles and stereochemistry), which use
 // additional characters.
-const smilesRe = new RegExp("^[A-Za-z\\[\\]()=#+-]*$");
+const smilesRe = /^[A-Za-z\[\]()=#+-]*$/;
 
 // Regexp defining what characters are valid as atom names.  This includes
 // common 1-character elements, Cl and Br for convenience, and the open
 // bracket, which can be used to include anything as an atom name.
-const atomRe = new RegExp("^(Cl|Br|[CONPSFBI]|\\[)");
+const atomRe = /^(Cl|Br|[CONPSFBI]|\[)/;
 
 function ParseError(message: string) {
     // @ts-expect-error - TS2683 - 'this' implicitly has type 'any' because it does not have a type annotation.

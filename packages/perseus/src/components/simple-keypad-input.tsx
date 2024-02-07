@@ -44,12 +44,11 @@ export default class SimpleKeypadInput extends React.Component<any> {
     }
 
     render(): React.ReactNode {
-        const _this = this;
         // Intercept the `onFocus` prop, as we need to configure the keypad
         // before continuing with the default focus logic for Perseus inputs.
         // Intercept the `value` prop so as to map `null` to the empty string,
         // as the `KeypadInput` does not support `null` values.
-        const {keypadElement, onFocus, value, ...rest} = _this.props;
+        const {keypadElement, onFocus, value, ...rest} = this.props;
 
         return (
             // @ts-expect-error - TS2769 - No overload matches this call.
@@ -64,7 +63,7 @@ export default class SimpleKeypadInput extends React.Component<any> {
                                 keypadType: KeypadType.FRACTION,
                             },
                             () => {
-                                if (_this._isMounted) {
+                                if (this._isMounted) {
                                     onFocus && onFocus();
                                 }
                             },

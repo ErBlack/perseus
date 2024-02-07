@@ -149,11 +149,15 @@ export type RuleCheckReturnType =
 // object containing a string and two numbers.
 // prettier-ignore
 // (prettier formats this in a way that ka-lint does not like)
-export type LintTesterReturnType = string | {
-    message: string,
-    start: number,
-    end: number
-} | null | undefined;
+export type LintTesterReturnType =
+    | string
+    | {
+          message: string;
+          start: number;
+          end: number;
+      }
+    | null
+    | undefined;
 
 export type LintRuleContextObject = any | null | undefined;
 

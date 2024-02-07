@@ -199,14 +199,12 @@ _.extend(GraphUtils.Graphie.prototype, {
      * Get mouse coordinates in pixels
      */
     getMousePx: function (event: Readonly<{pageX?: number; pageY?: number}>) {
-        const graphie = this;
-
         const mouseX =
             // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
-            event.pageX - $(graphie.raphael.canvas.parentNode).offset().left;
+            event.pageX - $(this.raphael.canvas.parentNode).offset().left;
         const mouseY =
             // @ts-expect-error - TS2532 - Object is possibly 'undefined'.
-            event.pageY - $(graphie.raphael.canvas.parentNode).offset().top;
+            event.pageY - $(this.raphael.canvas.parentNode).offset().top;
 
         return [mouseX, mouseY];
     },
@@ -448,8 +446,6 @@ _.extend(GraphUtils.Graphie.prototype, {
 
     /* Can also be used to label points that aren't vertices */
     labelVertex: function (options) {
-        const graphie = this;
-
         _.defaults(options, {
             point1: null,
             vertex: [0, 0],
@@ -465,7 +461,7 @@ _.extend(GraphUtils.Graphie.prototype, {
         }
 
         const vertex = options.vertex;
-        const sVertex = graphie.scalePoint(vertex);
+        const sVertex = this.scalePoint(vertex);
         let p1;
         let p3;
         if (options.clockwise) {
@@ -497,14 +493,14 @@ _.extend(GraphUtils.Graphie.prototype, {
         const sRadius = 10 + scaledDistanceFromAngle(360 - angle);
         const sOffsetVector = scaledPolarDeg(sRadius, halfAngle);
         const sPosition = kvector.add(sVertex, sOffsetVector);
-        const position = graphie.unscalePoint(sPosition);
+        const position = this.unscalePoint(sPosition);
 
         // Reuse label if possible
         if (options.label) {
             options.label.setPosition(position);
             options.label.processMath(options.text, /* force */ true);
         } else {
-            graphie.label(position, options.text, "center", options.style);
+            this.label(position, options.text, "center", options.style);
         }
     },
 
@@ -3347,10 +3343,7 @@ function Protractor(graph: any, center: any) {
     const isHighlight = function () {
         return isHovering || isDragging;
     };
-
-    // @ts-expect-error - TS2683 - 'this' implicitly has type 'any' because it does not have a type annotation.
-    const self = this;
-    const $mouseTarget = $(self.rotateHandle.mouseTarget.getMouseTarget());
+    const $mouseTarget = $(this.rotateHandle.mouseTarget.getMouseTarget());
     $mouseTarget.bind("vmousedown", function (event) {
         isDragging = true;
         $mouseTarget.css("cursor", "-webkit-grabbing");
