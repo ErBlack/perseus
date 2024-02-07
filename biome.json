@@ -34,13 +34,19 @@
                 "useValidAnchor": "off",
                 "noRedundantAlt": "off",
                 "useKeyWithMouseEvents": "off",
+                "noNoninteractiveTabindex": "off",
                 "useAltText": "off",
                 "useKeyWithClickEvents": "off"
             },
             "complexity": {
+                "noForEach": "off",
+                "noThisInStatic": "off",
+                "noUselessConstructor": "off",
+                "noUselessFragments": "off",
+                "noUselessSwitchCase": "off",
                 "useArrowFunction": "off",
-                "useOptionalChain": "off",
-                "noForEach": "off"
+                "useLiteralKeys": "off",
+                "useOptionalChain": "off"
             },
             "correctness": {
                 "noSwitchDeclarations": "off",
@@ -51,27 +57,32 @@
                 "useExhaustiveDependencies": "off"
             },
             "performance": {
-                "noAccumulatingSpread": "off"
+                "noAccumulatingSpread": "off",
+                "noDelete": "off"
             },
             "suspicious": {
-                "noAssignInExpressions": "off",
-                "noExplicitAny": "off",
-                "noRedeclare": "off",
-                "noImplicitAnyLet": "off",
                 "noArrayIndexKey": "off",
-                "noShadowRestrictedNames": "off",
+                "noAssignInExpressions": "off",
                 "noConfusingVoidType": "off",
+                "noGlobalIsFinite": "off",
+                "noDoubleEquals": "off",
+                "noExplicitAny": "off",
+                "noGlobalIsNan": "off",
+                "noImplicitAnyLet": "off",
+                "noPrototypeBuiltins": "off",
+                "noRedeclare": "off",
                 "noSelfCompare": "off",
-                "noPrototypeBuiltins": "off"
+                "noShadowRestrictedNames": "off"
             },
             "style": {
-                "noParameterAssign": "off",
-                "noUselessElse": "off",
-                "noUnusedTemplateLiteral": "off",
                 "noArguments": "off",
-                "noVar": "off",
                 "noNonNullAssertion": "off",
+                "noParameterAssign": "off",
+                "noUnusedTemplateLiteral": "off",
+                "noUselessElse": "off",
+                "noVar": "off",
                 "useExponentiationOperator": "off",
+                "useSingleVarDeclarator": "off",
                 "useTemplate": "off"
             }
         }
