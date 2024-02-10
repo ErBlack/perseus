@@ -14,7 +14,7 @@ import GraphUtils from "../util/graph-utils";
 import SvgImage from "./svg-image";
 
 import type {Coord} from "../interactive2/types";
-import type {PerseusImageBackground} from "../perseus-types";
+import type {PerseusImageBackground, LockedShape} from "../perseus-types";
 import type {GridDimensions} from "../util";
 
 const defaultBackgroundImage = {
@@ -59,6 +59,7 @@ type Props = {
     rulerTicks: number;
     instructions?: string;
     isMobile: boolean;
+    lockedShapes?: ReadonlyArray<LockedShape>;
 
     onGraphieUpdated?: (graphie: any) => void;
     onClick?: (Coord) => void;
@@ -316,6 +317,27 @@ class Graph extends React.Component<Props> {
             allowScratchpad: true,
             setDrawingAreaAvailable: this.props.setDrawingAreaAvailable,
         });
+
+        // Maybe move this out later
+        if (this.props.lockedShapes) {
+            for (const lockedShape of this.props.lockedShapes) {
+                switch (lockedShape.type) {
+                    case "point":
+                        graphie.circle(
+                            // center
+                            lockedShape.coord,
+                            // radius
+                            0.2,
+                            // style
+                            lockedShape.style,
+                        );
+                        break;
+                    case "segment":
+                        graphie.path(lockedShape.coords, lockedShape.style);
+                        break;
+                }
+            }
+        }
 
         this._updateProtractor();
         this._updateRuler();

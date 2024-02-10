@@ -151,6 +151,116 @@ export const linearQuestion: PerseusRenderer = {
     },
 };
 
+const blueTriangleStyle = {stroke: "#6494ed", fill: "#6494ed"};
+const grayTriangleStyle = {stroke: "#808080"};
+export const linearQuestionWithLockedPoints: PerseusRenderer = {
+    content:
+        "**Draw the line of reflection that will map $\\triangle{SIM}$ onto the other triangle below.**\n\n\n[[☃ interactive-graph 1]]",
+    images: {},
+    widgets: {
+        "interactive-graph 1": {
+            graded: true,
+            options: {
+                correct: {
+                    coords: [
+                        [-1, 1],
+                        [0, -2],
+                    ],
+                    type: "linear",
+                },
+                graph: {
+                    type: "linear",
+                },
+                gridStep: [1, 1],
+                labels: ["x", "y"],
+                lockedShapes: [
+                    /* First triangle */
+                    {
+                        type: "segment",
+                        coords: [
+                            [5, 3],
+                            [4, -4],
+                        ],
+                        style: blueTriangleStyle,
+                    },
+                    {
+                        type: "segment",
+                        coords: [
+                            [4, -4],
+                            [7, -3],
+                        ],
+                        style: blueTriangleStyle,
+                    },
+                    {
+                        type: "segment",
+                        coords: [
+                            [5, 3],
+                            [7, -3],
+                        ],
+                        style: blueTriangleStyle,
+                    },
+                    {
+                        type: "point",
+                        coord: [5, 3],
+                        style: blueTriangleStyle,
+                    },
+                    {
+                        type: "point",
+                        coord: [4, -4],
+                        style: blueTriangleStyle,
+                    },
+                    {
+                        type: "point",
+                        coord: [7, -3],
+                        style: blueTriangleStyle,
+                    },
+                    /* Second triangle */
+                    {
+                        type: "segment",
+                        coords: [
+                            [-7, -1],
+                            [-5, -7],
+                        ],
+                        style: grayTriangleStyle,
+                    },
+                    {
+                        type: "segment",
+                        coords: [
+                            [-5, -7],
+                            [-2, -6],
+                        ],
+                        style: grayTriangleStyle,
+                    },
+                    {
+                        type: "segment",
+                        coords: [
+                            [-7, -1],
+                            [-2, -6],
+                        ],
+                        style: grayTriangleStyle,
+                    },
+                ],
+                markings: "graph",
+                range: [
+                    [-10, 10],
+                    [-10, 10],
+                ],
+                rulerLabel: "",
+                rulerTicks: 10,
+                showProtractor: false,
+                showRuler: false,
+                snapStep: [0.5, 0.5],
+                step: [1, 1],
+            },
+            type: "interactive-graph",
+            version: {
+                major: 0,
+                minor: 0,
+            },
+        },
+    },
+};
+
 export const linearSystemQuestion: PerseusRenderer = {
     content:
         "**Drag the lines so one line goes through points $\\text{A}$ and $\\text{B}$, and the other line goes through points $\\text{C}$  and $\\text{D}$.**  \n[[☃ interactive-graph 1]]",
