@@ -48,6 +48,11 @@ interface RaphaelElement {
 
 type PositionedShape = {wrapper: HTMLDivElement; visibleShape: RaphaelElement};
 
+/**
+ * Used within path function coordinates to neatly close the path.
+ */
+type ClosePoint = true;
+
 export type StyleParams = {
     fill?: string;
     labelDistance?: number;
@@ -747,13 +752,13 @@ export class Graphie {
         });
     }
 
-    private unstyledPath(points: Coord[]): RaphaelElement {
+    private unstyledPath(points: (Coord | ClosePoint)[]): RaphaelElement {
         const p = this.raphael.path(this.svgPath(points));
         p.graphiePath = points;
         return p;
     }
 
-    path(points: Coord[], style?: StyleParams): RaphaelElement {
+    path(points: (Coord | ClosePoint)[], style?: StyleParams): RaphaelElement {
         return this.withStyle(style, () => {
             return this.unstyledPath(points);
         });
@@ -1089,7 +1094,7 @@ export class Graphie {
         });
     }
 
-    svgPath = (points: (Coord | true)[], alreadyScaled?: boolean) => {
+    svgPath = (points: (Coord | ClosePoint)[], alreadyScaled?: boolean) => {
         return points
             .map((point, i) => {
                 if (point === true) {

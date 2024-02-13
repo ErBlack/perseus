@@ -151,7 +151,8 @@ export const linearQuestion: PerseusRenderer = {
     },
 };
 
-const blueTriangleStyle = {stroke: "#6494ed", fill: "#6494ed"};
+const bluePointStyle = {stroke: "#6494ed", fill: "#6494ed"};
+const blueTriangleStyle = {stroke: "#6494ed"};
 const grayTriangleStyle = {stroke: "#808080"};
 export const linearQuestionWithLockedPoints: PerseusRenderer = {
     content:
@@ -176,68 +177,39 @@ export const linearQuestionWithLockedPoints: PerseusRenderer = {
                 lockedShapes: [
                     /* First triangle */
                     {
-                        type: "segment",
-                        coords: [
-                            [5, 3],
-                            [4, -4],
-                        ],
-                        style: blueTriangleStyle,
-                    },
-                    {
-                        type: "segment",
-                        coords: [
-                            [4, -4],
-                            [7, -3],
-                        ],
-                        style: blueTriangleStyle,
-                    },
-                    {
-                        type: "segment",
-                        coords: [
-                            [5, 3],
-                            [7, -3],
-                        ],
+                        type: "path",
+                        coords: [[5, 3], [4, -4], [7, -3]],
+                        isClosed: true,
                         style: blueTriangleStyle,
                     },
                     {
                         type: "point",
                         coord: [5, 3],
-                        style: blueTriangleStyle,
+                        style: bluePointStyle,
                     },
                     {
                         type: "point",
                         coord: [4, -4],
-                        style: blueTriangleStyle,
+                        style: bluePointStyle,
                     },
                     {
                         type: "point",
                         coord: [7, -3],
-                        style: blueTriangleStyle,
+                        style: bluePointStyle,
                     },
                     /* Second triangle */
                     {
-                        type: "segment",
-                        coords: [
-                            [-7, -1],
-                            [-5, -7],
-                        ],
+                        type: "path",
+                        coords: [[-7, -1], [-5, -7], [-2, -6]],
+                        isClosed: true,
                         style: grayTriangleStyle,
                     },
+                    /* Test square */
                     {
-                        type: "segment",
-                        coords: [
-                            [-5, -7],
-                            [-2, -6],
-                        ],
-                        style: grayTriangleStyle,
-                    },
-                    {
-                        type: "segment",
-                        coords: [
-                            [-7, -1],
-                            [-2, -6],
-                        ],
-                        style: grayTriangleStyle,
+                        type: "path",
+                        coords: [[-1, 1], [0, 1], [0, 0], [-1, 0]],
+                        // isClosed: true,
+                        style: {stroke: "red", strokeWidth: 4},
                     },
                 ],
                 markings: "graph",

@@ -332,8 +332,15 @@ class Graph extends React.Component<Props> {
                             lockedShape.style,
                         );
                         break;
-                    case "segment":
-                        graphie.path(lockedShape.coords, lockedShape.style);
+                    case "path":
+                        if (lockedShape.isClosed) {
+                            graphie.path([...lockedShape.coords, true], lockedShape.style);
+                        } else {
+                            graphie.path(
+                                lockedShape.coords,
+                                lockedShape.style,
+                            );
+                        }
                         break;
                 }
             }
