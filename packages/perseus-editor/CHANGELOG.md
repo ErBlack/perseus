@@ -1,5 +1,16 @@
 # @khanacademy/perseus-editor
 
+## 4.2.0
+
+### Minor Changes
+
+-   [#989](https://github.com/Khan/perseus/pull/989) [`97b5bbfb`](https://github.com/Khan/perseus/commit/97b5bbfbea591d3b6d814ed4717135138fb30dec) Thanks [@aag](https://github.com/aag)! - Add a new python-program widget and its editor
+
+### Patch Changes
+
+-   Updated dependencies [[`97b5bbfb`](https://github.com/Khan/perseus/commit/97b5bbfbea591d3b6d814ed4717135138fb30dec)]:
+    -   @khanacademy/perseus@19.2.0
+
 ## 4.1.9
 
 ### Patch Changes
